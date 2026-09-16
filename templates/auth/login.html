@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Sign In — RentEase Accommodation Registry{% endblock %}
+
+{% block content %}
+<div class="auth-section">
+  <div class="wrap auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-badge">PORTAL ACCESS</div>
+        <h2>Sign In to RentEase</h2>
+        <p class="auth-sub">Access your room bookings, roommate matches, or property administration.</p>
+
+        <!-- Mode Switcher Tabs -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab {% if mode != 'admin' %}active{% endif %}" id="tabStudent" onclick="switchLoginMode('student')">
+            <span class="tab-icon">🎓</span> Student Seeker
+          </button>
+          <button type="button" class="auth-tab {% if mode == 'admin' %}active{% endif %}" id="tabAdmin" onclick="switchLoginMode('admin')">
+            <span class="tab-icon">🛡️</span> PG Owner / Admin
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Fill Demo Credential Helpers -->
+      <div class="demo-credentials-banner" id="demoBanner">
+        <div class="demo-banner-content">
+          <span class="demo-title">Test Credentials (1-Click Fill):</span>
+          <div class="demo-btn-group">
+            <button type="button" class="btn-demo" onclick="fillDemo('student')">
+              Demo Student (Aarav)
+            </button>
+            <button type="button" class="btn-demo" onclick="fillDemo('admin')">
+              Demo Administrator
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form action="{{ url_for('login') }}" method="POST" class="auth-form" id="loginForm">
+        {% if next %}
+          <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+        <input type="hidden" name="role" id="loginRoleInput" value="{{ mode or 'student' }}">
+
+        <div class="form-group">
+          <label for="email" class="form-label">Campus Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input mono" 
+            placeholder="e.g. yourname@ksrct.ac.in" 
+            required 
+            autocomplete="email"
+          >
+          <span class="form-hint" id="emailHint">Use your college email or admin address</span>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label for="password" class="form-label">Password</label>
+            <span class="form-sub-link">Case sensitive</span>
+          </div>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-input mono" 
+            placeholder="••••••••••••" 
+            required 
+            autocomplete="current-password"
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+          Sign In to Portal &rarr;
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>New to RentEase? <a href="{{ url_for('register') }}" class="text-link">Create a student profile</a></p>
+        <p class="auth-security-note mono">🔒 256-bit encrypted session &bull; Role-based ACL</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchLoginMode(mode) {
+    const roleInput = document.getElementById('loginRoleInput');
+    const tabStudent = document.getElementById('tabStudent');
+    const tabAdmin = document.getElementById('tabAdmin');
+    const emailHint = document.getElementById('emailHint');
+    const submitBtn = document.getElementById('submitBtn');
+
+    roleInput.value = mode;
+
+    if (mode === 'admin') {
+      tabAdmin.classList.add('active');
+      tabStudent.classList.remove('active');
+      emailHint.textContent = "Administrative account (e.g. admin@rentease.com)";
+      submitBtn.textContent = "Access Admin Control &rarr;";
+    } else {
+      tabStudent.classList.add('active');
+      tabAdmin.classList.remove('active');
+      emailHint.textContent = "Use your college student email";
+      submitBtn.textContent = "Sign In as Student &rarr;";
+    }
+  }
+
+  function fillDemo(type) {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    if (type === 'admin') {
+      switchLoginMode('admin');
+      emailInput.value = 'admin@rentease.com';
+      passwordInput.value = 'admin123';
+    } else {
+      switchLoginMode('student');
+      emailInput.value = 'student@ksrct.ac.in';
+      passwordInput.value = 'student123';
+    }
+
+    // Visual feedback
+    emailInput.style.backgroundColor = '#dbe9db';
+    passwordInput.style.backgroundColor = '#dbe9db';
+    setTimeout(() => {
+      emailInput.style.backgroundColor = '';
+      passwordInput.style.backgroundColor = '';
+    }, 600);
+  }
+
+  // Pre-select mode on page load if specified
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentMode = "{{ mode }}";
+    if (currentMode === 'admin') {
+      switchLoginMode('admin');
+    }
+  });
+</script>
+{% endblock %}

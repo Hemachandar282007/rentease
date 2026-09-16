@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% block title %}Open Rooms & PG Registry — RentEase{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="wrap">
+    <div class="page-header-content">
+      <div>
+        <div class="section-badge">CAMPUS RESIDENCE DIRECTORY</div>
+        <h1>Verified Accommodation Registry</h1>
+        <p class="page-header-sub">
+          All verified student PGs and rooms within walking and cycling radius of campus.
+          Filter by budget, inspect multi-photo galleries, chat with hosts via WhatsApp, or lock in spots with a ₹500 token deposit.
+        </p>
+      </div>
+
+      <div class="register-summary-pill">
+        <span class="mono bold">{{ listings|length }}</span> Rooms Available
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="catalog-section">
+  <div class="wrap">
+    <!-- Filter Control Bar -->
+    <form action="{{ url_for('listings') }}" method="GET" class="filter-card">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label for="filter_q" class="filter-label">Search by Name or Area</label>
+          <input 
+            type="text" 
+            id="filter_q" 
+            name="q" 
+            class="filter-input" 
+            placeholder="e.g. Gate 2, Sunrise, Sengunthar..." 
+            value="{{ search_query or '' }}"
+          >
+        </div>
+
+        <div class="filter-group">
+          <label for="filter_type" class="filter-label">Room Type</label>
+          <select id="filter_type" name="room_type" class="filter-select">
+            <option value="">All Sharing Types</option>
+            <option value="Single" {% if room_type == 'Single' %}selected{% endif %}>Single Private Room</option>
+            <option value="Double" {% if room_type == 'Double' %}selected{% endif %}>Double Sharing</option>
+            <option value="Triple" {% if room_type == 'Triple' %}selected{% endif %}>Triple Sharing</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter_gender" class="filter-label">Gender Preference</label>
+          <select id="filter_gender" name="gender_pref" class="filter-select">
+            <option value="">Any / All Residents</option>
+            <option value="Boys" {% if gender_pref == 'Boys' %}selected{% endif %}>Boys Only</option>
+            <option value="Girls" {% if gender_pref == 'Girls' %}selected{% endif %}>Girls Only</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter_rent" class="filter-label">Max Budget (₹/mo)</label>
+          <select id="filter_rent" name="max_rent" class="filter-select">
+            <option value="">No Maximum Limit</option>
+            <option value="5000" {% if max_rent == 5000 %}selected{% endif %}>Up to ₹5,000</option>
+            <option value="6500" {% if max_rent == 6500 %}selected{% endif %}>Up to ₹6,500</option>
+            <option value="8000" {% if max_rent == 8000 %}selected{% endif %}>Up to ₹8,000</option>
+            <option value="10000" {% if max_rent == 10000 %}selected{% endif %}>Up to ₹10,000</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button type="submit" class="btn btn-primary filter-btn">Apply Filter</button>
+          <a href="{{ url_for('listings') }}" class="btn btn-ghost filter-reset">Reset</a>
+        </div>
+      </div>
+    </form>
+
+    <!-- Listings Results -->
+    {% if listings %}
+      <div class="cards-grid catalog-grid">
+        {% for item in listings %}
+        <div class="room-card full-card">
+          <!-- Room Photo Preview with Gallery Trigger -->
+          <div class="room-card-photo-wrapper">
+            <img 
+              src="{{ item.image_url or 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80' }}" 
+              alt="{{ item.name }}" 
+              class="room-card-thumb"
+              loading="lazy"
+            >
+            <button 
+              type="button" 
+              class="photo-gallery-badge"
+              onclick='openGalleryModal("{{ item.name }}", "{{ item.area }}", {{ item.images|default("[]")|safe if item.images else "[\"" ~ item.image_url ~ "\"]" }})'
+            >
+              📷 Inspect Photos
+            </button>
+            <span class="status-tag room-thumb-status {% if item.status_kind == 'open' %}status-open{% elif item.status_kind == 'low' %}status-low{% else %}status-full{% endif %}">
+              {{ item.status }}
+            </span>
+          </div>
+
+          <div class="room-card-content">
+            <div class="room-card-header">
+              <div class="room-type-badge">{{ item.room_type }} Sharing &bull; {{ item.gender_pref }}</div>
+              <div class="rating-badge mono">★ {{ item.rating }}</div>
+            </div>
+
+            <div class="card-main-info">
+              <h3 class="room-title">{{ item.name }}</h3>
+              <p class="room-area mono">📍 {{ item.area }}</p>
+              <p class="room-address">{{ item.address }}</p>
+            </div>
+
+            <div class="card-desc-box">
+              <p class="room-desc">{{ item.description }}</p>
+            </div>
+
+            <div class="room-amenities">
+              {% for am in item.amenities.split(', ')[:4] %}
+                <span class="amenity-chip">{{ am }}</span>
+              {% endfor %}
+              {% if item.amenities.split(', ')|length > 4 %}
+                <span class="amenity-chip">+{{ item.amenities.split(', ')|length - 4 }} more</span>
+              {% endif %}
+            </div>
+
+            <div class="room-card-specs">
+              <div class="spec-item">
+                <span class="spec-label">Deposit:</span>
+                <span class="spec-val mono">₹{{ "{:,}".format(item.deposit) }}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Hold Token:</span>
+                <span class="spec-val mono bold" style="color: var(--stamp-green);">₹500</span>
+              </div>
+            </div>
+
+            <div class="room-card-footer">
+              <div class="room-price">
+                <span class="price-val mono">₹{{ "{:,}".format(item.rent_monthly) }}</span>
+                <span class="price-period">/ month</span>
+              </div>
+
+              <div class="card-action-buttons">
+                <!-- Save Bookmark -->
+                {% if current_user %}
+                  <button 
+                    type="button" 
+                    class="btn-save-bookmark {% if item.id in saved_ids %}saved{% endif %}"
+                    onclick="toggleBookmark({{ item.id }}, this)"
+                    title="Save room"
+                  >
+                    {% if item.id in saved_ids %}★ Saved{% else %}☆ Save{% endif %}
+                  </button>
+                {% endif %}
+
+                <!-- WhatsApp Quick Chat -->
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-whatsapp" 
+                  onclick="chatWhatsApp({{ item.id }})" 
+                  title="Direct WhatsApp chat with property host"
+                >
+                  💬 WhatsApp
+                </button>
+
+                <!-- In-Person Visit Booking -->
+                <button 
+                  type="button" 
+                  class="btn btn-ghost btn-sm"
+                  onclick="openBookingModal({{ item.id }}, '{{ item.name }}', '{{ item.area }}', '{{ item.rent_monthly }}')"
+                >
+                  Schedule Visit
+                </button>
+
+                <!-- Token Reservation Payment -->
+                <button 
+                  type="button" 
+                  class="btn btn-primary btn-sm"
+                  onclick="openPaymentModal({{ item.id }}, '{{ item.name }}', '{{ item.rent_monthly }}')"
+                >
+                  ⚡ Pay ₹500 Hold
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state-card">
+        <div class="empty-icon">📂</div>
+        <h3>No matching rooms found in registry</h3>
+        <p>Try adjusting your search criteria or resetting the filters to view all available listings.</p>
+        <a href="{{ url_for('listings') }}" class="btn btn-primary">Show All Available Rooms</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Booking Modal (Shared) -->
+<div id="bookingModal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="auth-badge">VISIT SCHEDULE</div>
+      <h3 id="modalListingTitle">Schedule Room Visit</h3>
+      <p id="modalListingArea" class="modal-sub"></p>
+      <button type="button" class="modal-close" onclick="closeBookingModal()">&times;</button>
+    </div>
+
+    {% if current_user %}
+    <form id="bookingForm" onsubmit="submitVisitBooking(event)">
+      <input type="hidden" id="bookingListingId" name="listing_id">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="visit_date" class="form-label">Preferred Date</label>
+          <input type="date" id="visit_date" name="visit_date" class="form-input mono" required>
+        </div>
+        <div class="form-group">
+          <label for="visit_time" class="form-label">Preferred Time Slot</label>
+          <select id="visit_time" name="visit_time" class="form-select mono" required>
+            <option value="10:00 AM">10:00 AM (Morning)</option>
+            <option value="11:30 AM">11:30 AM (Late Morning)</option>
+            <option value="02:30 PM">02:30 PM (Afternoon)</option>
+            <option value="04:30 PM" selected>04:30 PM (Evening)</option>
+            <option value="06:00 PM">06:00 PM (Post College)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="booking_message" class="form-label">Message for Property Host / Owner (Optional)</label>
+        <textarea 
+          id="booking_message" 
+          name="message" 
+          class="form-textarea" 
+          rows="3" 
+          placeholder="e.g. Coming with my roommate to inspect Wi-Fi and food options."
+        ></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeBookingModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btnConfirmBooking">Confirm Visit Slot &rarr;</button>
+      </div>
+    </form>
+    {% else %}
+    <div class="modal-login-prompt">
+      <p>You need to be signed in as a student to schedule an in-person room visit.</p>
+      <div class="prompt-actions">
+        <a href="{{ url_for('login') }}?next={{ request.url }}" class="btn btn-primary">Sign In to Book Visit</a>
+        <a href="{{ url_for('register') }}" class="btn btn-ghost">Create Student Account</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

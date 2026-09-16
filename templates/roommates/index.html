@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+{% block title %}Roommate Matching — RentEase{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="wrap">
+    <div class="page-header-content">
+      <div>
+        <div class="section-badge">COLLEGIATE MATCHER</div>
+        <h1>Lifestyle-Compatible Roommates</h1>
+        <p class="page-header-sub">
+          Stop guessing who you'll live with. Match with campus peers based on actual daily lifestyle habits — sleep hours, study environments, and dietary routines.
+        </p>
+      </div>
+
+      <div class="roommate-header-action">
+        {% if current_user and current_user.role == 'student' %}
+          <button type="button" class="btn btn-primary" onclick="openProfileModal()">
+            {% if my_profile %}✏️ Edit My Profile{% else %}+ Post My Roommate Profile{% endif %}
+          </button>
+        {% else %}
+          <a href="{{ url_for('login') }}?next={{ request.url }}" class="btn btn-primary">
+            Sign In to Post Profile
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="roommates-section">
+  <div class="wrap">
+    <!-- Interactive Matcher Filter -->
+    <div class="matcher-filter-card">
+      <div class="matcher-filter-title">
+        <span class="filter-icon">⚡</span>
+        <h3>Interactive Lifestyle Preference Matcher</h3>
+      </div>
+      <p class="filter-desc">
+        Select your lifestyle preferences below. RentEase calculates real-time compatibility scores with registered peers.
+      </p>
+
+      <div class="matcher-controls-grid">
+        <div class="matcher-field">
+          <label class="matcher-label">Your Sleep Schedule</label>
+          <select id="matchSleep" class="matcher-select" onchange="recalculateMatches()">
+            <option value="All">Any Schedule</option>
+            <option value="Night Owl">Night Owl (Up till 2 AM)</option>
+            <option value="Early Bird">Early Bird (Sleep by 10 PM)</option>
+            <option value="Flexible">Flexible Schedule</option>
+          </select>
+        </div>
+
+        <div class="matcher-field">
+          <label class="matcher-label">Your Diet Preference</label>
+          <select id="matchFood" class="matcher-select" onchange="recalculateMatches()">
+            <option value="All">Any Diet</option>
+            <option value="Vegetarian">Strictly Vegetarian</option>
+            <option value="Non-Vegetarian">Non-Vegetarian</option>
+          </select>
+        </div>
+
+        <div class="matcher-field">
+          <label class="matcher-label">Study Atmosphere</label>
+          <select id="matchStudy" class="matcher-select" onchange="recalculateMatches()">
+            <option value="All">Any Atmosphere</option>
+            <option value="Silent Study">Pin-drop Silence</option>
+            <option value="Background Music">Low Music / Ambient</option>
+            <option value="Group Study">Discussion / Group</option>
+          </select>
+        </div>
+
+        <div class="matcher-field">
+          <label class="matcher-label">Cleanliness Level</label>
+          <select id="matchClean" class="matcher-select" onchange="recalculateMatches()">
+            <option value="All">Any Standard</option>
+            <option value="Very Neat">Very Neat & Tidy</option>
+            <option value="Moderate">Moderate</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roommates Grid -->
+    <div class="roommates-grid" id="roommatesGrid">
+      {% for p in profiles %}
+      <div 
+        class="roommate-card" 
+        data-sleep="{{ p.sleep_schedule }}" 
+        data-food="{{ p.food_pref }}" 
+        data-study="{{ p.study_habit }}" 
+        data-clean="{{ p.cleanliness }}"
+      >
+        <div class="roommate-top">
+          <div class="roommate-avatar">{{ p.avatar_initials or 'ST' }}</div>
+          <div class="roommate-info">
+            <h3 class="roommate-name">{{ p.name }}</h3>
+            <p class="roommate-major mono">{{ p.major }} &bull; Class of {{ p.graduation_year or '2026' }}</p>
+            <p class="roommate-college">{{ p.college }}</p>
+          </div>
+          <div class="compatibility-badge" id="badge-{{ p.id }}">
+            <span class="match-score">92%</span>
+            <span class="match-caption">Match</span>
+          </div>
+        </div>
+
+        <div class="roommate-bio-box">
+          <p class="roommate-bio">“{{ p.bio }}”</p>
+        </div>
+
+        <div class="roommate-habits-grid">
+          <div class="habit-item">
+            <span class="habit-label">Sleep:</span>
+            <span class="habit-val">{{ p.sleep_schedule }}</span>
+          </div>
+          <div class="habit-item">
+            <span class="habit-label">Cleanliness:</span>
+            <span class="habit-val">{{ p.cleanliness }}</span>
+          </div>
+          <div class="habit-item">
+            <span class="habit-label">Study:</span>
+            <span class="habit-val">{{ p.study_habit }}</span>
+          </div>
+          <div class="habit-item">
+            <span class="habit-label">Food:</span>
+            <span class="habit-val">{{ p.food_pref }}</span>
+          </div>
+        </div>
+
+        <div class="roommate-footer">
+          <div class="roommate-budget">
+            <span class="budget-label">Max Budget:</span>
+            <span class="budget-val mono">₹{{ "{:,}".format(p.budget_max) }}/mo</span>
+          </div>
+          <div class="roommate-contact">
+            {% if current_user %}
+              <a href="mailto:{{ p.email }}?subject=RentEase%20Roommate%20Inquiry" class="btn btn-primary btn-sm">
+                Connect via Email &rarr;
+              </a>
+            {% else %}
+              <a href="{{ url_for('login') }}?next={{ request.url }}" class="btn btn-ghost btn-sm">
+                Sign In to Connect
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal for Student -->
+{% if current_user and current_user.role == 'student' %}
+<div id="profileModal" class="modal-overlay hidden">
+  <div class="modal-card modal-card-lg">
+    <div class="modal-header">
+      <div class="auth-badge">ROOMMATE DIRECTORY PROFILE</div>
+      <h3>{% if my_profile %}Update Your Roommate Profile{% else %}Publish Your Roommate Profile{% endif %}</h3>
+      <p class="modal-sub">Help prospective roommates evaluate compatibility with your lifestyle.</p>
+      <button type="button" class="modal-close" onclick="closeProfileModal()">&times;</button>
+    </div>
+
+    <form action="{{ url_for('save_roommate_profile') }}" method="POST" class="profile-form">
+      <div class="form-group">
+        <label for="bio" class="form-label">Brief Bio & Habits</label>
+        <textarea 
+          id="bio" 
+          name="bio" 
+          class="form-textarea" 
+          rows="3" 
+          required 
+          placeholder="e.g. 3rd year CSE student building web apps. Quiet study environment preferred, sleep by midnight..."
+        >{{ my_profile.bio if my_profile else '' }}</textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="major" class="form-label">Degree & Branch</label>
+          <input 
+            type="text" 
+            id="major" 
+            name="major" 
+            class="form-input" 
+            required 
+            placeholder="e.g. B.Tech Computer Science"
+            value="{{ my_profile.major if my_profile else '' }}"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="graduation_year" class="form-label">Graduation Year</label>
+          <input 
+            type="text" 
+            id="graduation_year" 
+            name="graduation_year" 
+            class="form-input mono" 
+            required 
+            placeholder="e.g. 2026"
+            value="{{ my_profile.graduation_year if my_profile else '2026' }}"
+          >
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="budget_max" class="form-label">Max Monthly Budget (₹)</label>
+          <input 
+            type="number" 
+            id="budget_max" 
+            name="budget_max" 
+            class="form-input mono" 
+            required 
+            placeholder="6500"
+            value="{{ my_profile.budget_max if my_profile else 6500 }}"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="gender" class="form-label">Gender</label>
+          <select id="gender" name="gender" class="form-select">
+            <option value="Male" {% if my_profile and my_profile.gender == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if my_profile and my_profile.gender == 'Female' %}selected{% endif %}>Female</option>
+            <option value="Any" {% if my_profile and my_profile.gender == 'Any' %}selected{% endif %}>Prefer not to say</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="sleep_schedule" class="form-label">Sleep Routine</label>
+          <select id="sleep_schedule" name="sleep_schedule" class="form-select">
+            <option value="Early Bird (10 PM)" {% if my_profile and 'Early Bird' in my_profile.sleep_schedule %}selected{% endif %}>Early Bird (Sleep by 10 PM)</option>
+            <option value="Night Owl (2 AM)" {% if my_profile and 'Night Owl' in my_profile.sleep_schedule %}selected{% endif %}>Night Owl (Up until 2 AM)</option>
+            <option value="Flexible" {% if my_profile and 'Flexible' in my_profile.sleep_schedule %}selected{% endif %}>Flexible Schedule</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="food_pref" class="form-label">Food Routine</label>
+          <select id="food_pref" name="food_pref" class="form-select">
+            <option value="Vegetarian" {% if my_profile and my_profile.food_pref == 'Vegetarian' %}selected{% endif %}>Strictly Vegetarian</option>
+            <option value="Non-Vegetarian" {% if my_profile and my_profile.food_pref == 'Non-Vegetarian' %}selected{% endif %}>Non-Vegetarian</option>
+            <option value="Any" {% if my_profile and my_profile.food_pref == 'Any' %}selected{% endif %}>Any Dietary Choice</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="study_habit" class="form-label">Study Atmosphere</label>
+          <select id="study_habit" name="study_habit" class="form-select">
+            <option value="Silent Study" {% if my_profile and my_profile.study_habit == 'Silent Study' %}selected{% endif %}>Silent Study</option>
+            <option value="Background Music" {% if my_profile and my_profile.study_habit == 'Background Music' %}selected{% endif %}>Background Music</option>
+            <option value="Group Study" {% if my_profile and my_profile.study_habit == 'Group Study' %}selected{% endif %}>Group Discussions</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cleanliness" class="form-label">Cleanliness Expectation</label>
+          <select id="cleanliness" name="cleanliness" class="form-select">
+            <option value="Very Neat & Tidy" {% if my_profile and 'Very Neat' in my_profile.cleanliness %}selected{% endif %}>Very Neat & Tidy</option>
+            <option value="Moderate" {% if my_profile and my_profile.cleanliness == 'Moderate' %}selected{% endif %}>Moderate Cleanliness</option>
+            <option value="Relaxed" {% if my_profile and my_profile.cleanliness == 'Relaxed' %}selected{% endif %}>Relaxed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeProfileModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Profile to Registry &rarr;</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  function recalculateMatches() {
+    const sleep = document.getElementById('matchSleep').value;
+    const food = document.getElementById('matchFood').value;
+    const study = document.getElementById('matchStudy').value;
+    const clean = document.getElementById('matchClean').value;
+
+    const cards = document.querySelectorAll('.roommate-card');
+    cards.forEach((card) => {
+      let score = 75; // base compatibility
+
+      const cardSleep = card.getAttribute('data-sleep') || '';
+      const cardFood = card.getAttribute('data-food') || '';
+      const cardStudy = card.getAttribute('data-study') || '';
+      const cardClean = card.getAttribute('data-clean') || '';
+
+      if (sleep !== 'All' && cardSleep.toLowerCase().includes(sleep.toLowerCase())) score += 8;
+      if (food !== 'All' && cardFood.toLowerCase().includes(food.toLowerCase())) score += 7;
+      if (study !== 'All' && cardStudy.toLowerCase().includes(study.toLowerCase())) score += 5;
+      if (clean !== 'All' && cardClean.toLowerCase().includes(clean.toLowerCase())) score += 5;
+
+      if (score > 98) score = 98;
+
+      const scoreEl = card.querySelector('.match-score');
+      if (scoreEl) {
+        scoreEl.textContent = score + '%';
+      }
+    });
+  }
+</script>
+{% endblock %}

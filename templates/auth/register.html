@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Register Student Account — RentEase{% endblock %}
+
+{% block content %}
+<div class="auth-section">
+  <div class="wrap auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-badge">STUDENT ENROLLMENT</div>
+        <h2>Create Your Student Profile</h2>
+        <p class="auth-sub">Get direct access to verified campus PGs, book visits, and match with compatible roommates.</p>
+      </div>
+
+      <form action="{{ url_for('register') }}" method="POST" class="auth-form">
+        <input type="hidden" name="role" value="student">
+
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            class="form-input" 
+            placeholder="e.g. Aarav Sharma" 
+            required
+            autocomplete="name"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">College Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input mono" 
+            placeholder="e.g. yourname@ksrct.ac.in" 
+            required
+            autocomplete="email"
+          >
+          <span class="form-hint">Used for visit confirmation and roommate contact requests</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone" class="form-label">Phone / WhatsApp</label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              class="form-input mono" 
+              placeholder="+91 98421 00000"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="college" class="form-label">College / Department</label>
+            <input 
+              type="text" 
+              id="college" 
+              name="college" 
+              class="form-input" 
+              placeholder="e.g. KSRCT - CSE Dept"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label for="password" class="form-label">Password</label>
+            <span class="form-sub-link">Minimum 6 characters</span>
+          </div>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-input mono" 
+            placeholder="••••••••••••" 
+            minlength="6" 
+            required
+            autocomplete="new-password"
+          >
+        </div>
+
+        <div class="form-terms">
+          <input type="checkbox" id="terms" required checked>
+          <label for="terms">I verify that I am a college student or accommodation seeker adhering to campus hostel guidelines.</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          Complete Registration &rarr;
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="{{ url_for('login') }}" class="text-link">Sign in here</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

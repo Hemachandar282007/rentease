@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}RentEase — Student Room Rental & Roommate Matching{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Top Announcement Strip -->
+  <div class="top-announcement">
+    <div class="wrap top-announcement-inner">
+      <span>CAMPUS REGISTRY &bull; VERIFIED STUDENT RESIDENCES &bull; 2026 ACADEMIC YEAR</span>
+      <div class="announcement-right">
+        {% if current_user %}
+          <span>Signed in as <strong class="mono">{{ current_user.name }}</strong> ({{ current_user.role | capitalize }})</span>
+        {% else %}
+          <span>Official Accommodation Directory & Matcher</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Site Header -->
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="{{ url_for('home') }}">
+        <span class="brand-mark">RE</span>
+        <div class="brand-text">
+          <span class="brand-name">RentEase</span>
+          <span class="brand-sub">KSRCT Accommodation Registry</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="main-nav">
+        <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('listings') }}" class="{% if request.endpoint == 'listings' %}active{% endif %}">Open Rooms</a>
+        <a href="{{ url_for('roommates') }}" class="{% if request.endpoint == 'roommates' %}active{% endif %}">Roommate Match</a>
+
+        {% if current_user %}
+          {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-admin-badge {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+              <span class="badge-dot"></span> Admin Portal
+            </a>
+          {% else %}
+            <a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">My Dashboard</a>
+          {% endif %}
+
+          <div class="user-pill-container">
+            <div class="user-avatar">{{ current_user.avatar_initials or 'ST' }}</div>
+            <div class="user-meta">
+              <span class="user-name">{{ current_user.name }}</span>
+              <span class="user-role">{{ current_user.role | capitalize }}</span>
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn-logout" title="Sign out">Sign out &rarr;</a>
+          </div>
+        {% else %}
+          <div class="auth-actions">
+            <a href="{{ url_for('login') }}" class="btn-login">Sign In</a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary nav-cta">Join / Register</a>
+          </div>
+        {% endif %}
+      </nav>
+
+      <!-- Mobile Menu Toggle Button -->
+      <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <!-- Mobile Nav Drawer -->
+    <div class="mobile-nav" id="mobileNav">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('listings') }}">Open Rooms</a>
+      <a href="{{ url_for('roommates') }}">Roommate Match</a>
+      {% if current_user %}
+        {% if current_user.role == 'admin' %}
+          <a href="{{ url_for('admin_dashboard') }}">Admin Portal</a>
+        {% else %}
+          <a href="{{ url_for('student_dashboard') }}">My Dashboard</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Sign Out ({{ current_user.name }})</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Sign In</a>
+        <a href="{{ url_for('register') }}">Create Account</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Flash Messages Notifications -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="wrap flash-container">
+        {% for category, message in messages %}
+          <div class="flash-banner flash-{{ category }}">
+            <span class="flash-icon">
+              {% if category == 'success' %}✓
+              {% elif category == 'error' %}✕
+              {% elif category == 'warning' %}⚠
+              {% else %}ℹ{% endif %}
+            </span>
+            <span class="flash-text">{{ message }}</span>
+            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content Block -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <div class="brand">
+            <span class="brand-mark small">RE</span>
+            <span class="brand-name">RentEase</span>
+          </div>
+          <p class="footer-note">
+            The collegiate rental registry and lifestyle-based roommate matching system.
+            Engineered for students, verified by residents, powered by full-stack Flask.
+          </p>
+          <div class="stamp-verified">OFFICIALLY REGISTERED &bull; 2026</div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Directory</h4>
+          <ul>
+            <li><a href="{{ url_for('listings') }}">Browse All Rooms</a></li>
+            <li><a href="{{ url_for('listings') }}?gender_pref=Boys">Boys Accommodations</a></li>
+            <li><a href="{{ url_for('listings') }}?gender_pref=Girls">Girls PGs & Hostels</a></li>
+            <li><a href="{{ url_for('roommates') }}">Find a Compatible Roommate</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Portal Access</h4>
+          <ul>
+            {% if current_user %}
+              {% if current_user.role == 'admin' %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Admin Control Panel</a></li>
+              {% else %}
+                <li><a href="{{ url_for('student_dashboard') }}">Student Dashboard</a></li>
+              {% endif %}
+              <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+            {% else %}
+              <li><a href="{{ url_for('login') }}">Student Sign In</a></li>
+              <li><a href="{{ url_for('login') }}?mode=admin">Property Owner / Admin Login</a></li>
+              <li><a href="{{ url_for('register') }}">Create Student Profile</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Campus Support</h4>
+          <p class="support-text">KSRCT Campus Gate 2 Info Hub</p>
+          <p class="support-text mono">desk@rentease.ksrct.ac.in</p>
+          <p class="support-text mono">+91 98421 00100</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 RentEase Accommodation Network. All rights reserved.</span>
+        <span class="mono">Deploy Ready &bull; WSGI Production Compatible</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container for Async Operations -->
+  <div id="toastNotification" class="toast hidden">
+    <span id="toastMessage"></span>
+  </div>
+
+  <!-- Shared Photo Gallery Lightbox Modal -->
+  <div id="galleryModal" class="modal-overlay hidden">
+    <div class="modal-card modal-card-lg gallery-modal-card">
+      <div class="modal-header">
+        <div class="auth-badge">ROOM PHOTO INSPECTION</div>
+        <h3 id="galleryTitle">Room Photo Gallery</h3>
+        <p id="gallerySubtitle" class="modal-sub"></p>
+        <button type="button" class="modal-close" onclick="closeGalleryModal()">&times;</button>
+      </div>
+      <div class="gallery-main-view">
+        <img id="galleryMainImg" src="" alt="Room Photo" class="gallery-large-img">
+      </div>
+      <div class="gallery-thumbs" id="galleryThumbs"></div>
+    </div>
+  </div>
+
+  <!-- Shared Token Booking Payment Modal -->
+  <div id="paymentModal" class="modal-overlay hidden">
+    <div class="modal-card payment-modal-card">
+      <div class="modal-header">
+        <div class="auth-badge">INSTANT SPOT RESERVATION</div>
+        <h3>Reserve Room Spot</h3>
+        <p class="modal-sub">₹500 token advance holds this room for 7 days (deducted from 1st rent)</p>
+        <button type="button" class="modal-close" onclick="closePaymentModal()">&times;</button>
+      </div>
+
+      {% if current_user %}
+      <form id="paymentForm" onsubmit="processTokenPayment(event)">
+        <input type="hidden" id="payListingId">
+        <div class="payment-summary-box">
+          <div class="pay-sum-row">
+            <span class="pay-sum-label">Property:</span>
+            <strong id="payListingName" class="pay-sum-val"></strong>
+          </div>
+          <div class="pay-sum-row">
+            <span class="pay-sum-label">Monthly Rent:</span>
+            <span id="payListingRent" class="mono"></span>
+          </div>
+          <div class="pay-sum-row highlight">
+            <span class="pay-sum-label">Token Advance Amount:</span>
+            <strong class="mono" style="font-size: 18px; color: var(--stamp-green);">₹500</strong>
+          </div>
+        </div>
+
+        <div class="payment-method-selector">
+          <label class="form-label">Select Payment Method</label>
+          <div class="payment-method-options">
+            <label class="pay-opt">
+              <input type="radio" name="pay_method" value="UPI / Google Pay" checked onchange="togglePayFields('upi')">
+              <span>UPI / GPay / PhonePe</span>
+            </label>
+            <label class="pay-opt">
+              <input type="radio" name="pay_method" value="Credit/Debit Card" onchange="togglePayFields('card')">
+              <span>Debit / Credit Card</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="upiFields" class="form-group" style="margin-top: 14px;">
+          <label class="form-label">Enter UPI Virtual ID (VPA)</label>
+          <input type="text" id="payUpiId" class="form-input mono" placeholder="e.g. yourname@okhdfcbank" value="student@okhdfcbank">
+          <span class="form-hint">Simulated secure payment gateway (Zero charge testing)</span>
+        </div>
+
+        <div id="cardFields" class="form-group hidden" style="margin-top: 14px;">
+          <label class="form-label">Card Number</label>
+          <input type="text" id="payCardNum" class="form-input mono" placeholder="4242 •••• •••• 4242" value="4532 8812 3341 9012">
+          <div class="form-row" style="margin-top: 8px;">
+            <input type="text" class="form-input mono" placeholder="MM/YY" value="08/28">
+            <input type="password" class="form-input mono" placeholder="CVV" value="882">
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closePaymentModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnPayConfirm">Pay ₹500 & Secure Spot &rarr;</button>
+        </div>
+      </form>
+      {% else %}
+      <div class="modal-login-prompt">
+        <p>Please sign in to reserve a room spot with token payment.</p>
+        <div class="prompt-actions">
+          <a href="{{ url_for('login') }}?next={{ request.url }}" class="btn btn-primary">Sign In</a>
+          <a href="{{ url_for('register') }}" class="btn btn-ghost">Register</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Shared Digital Receipt Modal -->
+  <div id="receiptModal" class="modal-overlay hidden">
+    <div class="modal-card receipt-modal-card">
+      <div class="receipt-seal">OFFICIAL RECEIPT</div>
+      <div class="receipt-header">
+        <div class="brand">
+          <span class="brand-mark small">RE</span>
+          <span class="brand-name">RentEase</span>
+        </div>
+        <p class="receipt-sub mono">Campus Housing Token Deposit Voucher</p>
+      </div>
+
+      <div class="receipt-body">
+        <div class="receipt-line">
+          <span class="r-label">Receipt Number:</span>
+          <span id="recNumber" class="mono bold"></span>
+        </div>
+        <div class="receipt-line">
+          <span class="r-label">Payment ID:</span>
+          <span id="recPaymentId" class="mono"></span>
+        </div>
+        <div class="receipt-line">
+          <span class="r-label">Date & Time:</span>
+          <span id="recDate" class="mono"></span>
+        </div>
+        <div class="receipt-divider"></div>
+        <div class="receipt-line">
+          <span class="r-label">Student Name:</span>
+          <span id="recStudentName" class="bold"></span>
+        </div>
+        <div class="receipt-line">
+          <span class="r-label">Property Reserved:</span>
+          <span id="recListingName" class="bold"></span>
+        </div>
+        <div class="receipt-line">
+          <span class="r-label">Payment Method:</span>
+          <span id="recMethod" class="mono"></span>
+        </div>
+        <div class="receipt-line highlight-amount">
+          <span class="r-label">Advance Deposit Paid:</span>
+          <span id="recAmount" class="mono bold" style="font-size: 20px; color: var(--stamp-green);">₹500</span>
+        </div>
+        <div class="receipt-stamp">SPOT RESERVED &bull; 7 DAYS HOLD</div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="window.print()">🖨️ Print Voucher</button>
+        <button type="button" class="btn btn-primary" onclick="closeReceiptModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

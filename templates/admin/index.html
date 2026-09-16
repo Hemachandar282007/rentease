@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+{% block title %}Administrator Housing Operations — RentEase{% endblock %}
+
+{% block content %}
+<div class="page-header admin-page-header">
+  <div class="wrap">
+    <div class="page-header-content">
+      <div>
+        <div class="section-badge admin-badge">HOUSING OPERATIONS DESK</div>
+        <h1>Central Administration & Property Management</h1>
+        <p class="page-header-sub">
+          Moderate verified room inventory, confirm student visit requests, track advance token payments, and dispatch WhatsApp alerts.
+        </p>
+      </div>
+
+      <div class="admin-top-actions">
+        <button type="button" class="btn btn-primary" onclick="openAddListingModal()">
+          + Add New Room Listing
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin KPI Metrics Grid -->
+    <div class="admin-metrics-grid">
+      <div class="metric-card">
+        <span class="metric-val mono">{{ total_listings }}</span>
+        <span class="metric-label">Total Registered Rooms</span>
+      </div>
+      <div class="metric-card highlight-green">
+        <span class="metric-val mono">{{ vacant_listings }}</span>
+        <span class="metric-label">Move-In Ready (Vacant)</span>
+      </div>
+      <div class="metric-card highlight-red">
+        <span class="metric-val mono">{{ pending_visits }}</span>
+        <span class="metric-label">Pending Visit Requests</span>
+      </div>
+      <div class="metric-card highlight-green">
+        <span class="metric-val mono" style="color: var(--stamp-green);">₹{{ "{:,}".format(total_revenue) }}</span>
+        <span class="metric-label">Token Advance Collected</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="admin-content">
+  <div class="wrap">
+    <!-- Visit Requests Moderation Section -->
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <div>
+          <h2>Student Visit Requests & Appointments</h2>
+          <p class="section-sub">Review incoming appointment requests and confirm slots for campus visitors.</p>
+        </div>
+      </div>
+
+      {% if visits %}
+        <div class="register admin-register">
+          <div class="register-head admin-visit-head">
+            <span>Student & Contact</span>
+            <span>Requested Room</span>
+            <span>Date & Time</span>
+            <span>Current Status</span>
+            <span>Decision & WhatsApp</span>
+          </div>
+
+          {% for v in visits %}
+          <div class="register-row admin-visit-row">
+            <div>
+              <strong class="reg-name">{{ v.student_name }}</strong>
+              <div class="mono reg-sub">{{ v.student_email }}</div>
+              <div class="mono reg-sub">{{ v.student_phone or 'No phone' }}</div>
+            </div>
+
+            <div>
+              <strong class="reg-name">{{ v.listing_name }}</strong>
+              {% if v.message %}
+                <div class="reg-note">Note: “{{ v.message }}”</div>
+              {% endif %}
+            </div>
+
+            <div class="mono">
+              <strong>{{ v.visit_date }}</strong>
+              <div class="reg-sub">{{ v.visit_time }}</div>
+            </div>
+
+            <div>
+              <span class="status-tag {% if v.status == 'Confirmed' %}status-open{% elif v.status == 'Declined' %}status-full{% else %}status-low{% endif %}">
+                {{ v.status }}
+              </span>
+            </div>
+
+            <div class="admin-row-actions">
+              {% if v.status != 'Confirmed' %}
+                <form action="{{ url_for('admin_moderate_visit', visit_id=v.id, action='confirm') }}" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-primary-green">Confirm</button>
+                </form>
+              {% endif %}
+              {% if v.status != 'Declined' %}
+                <form action="{{ url_for('admin_moderate_visit', visit_id=v.id, action='decline') }}" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-ghost-red">Decline</button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state-card small">
+          <p>No visit requests currently in the queue.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Advance Token Bookings & Transactions Table -->
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <div>
+          <h2>Advance Token Deposits & Spots Held ({{ payments|length }})</h2>
+          <p class="section-sub">Verified holding payments made by students to lock in room spots.</p>
+        </div>
+      </div>
+
+      {% if payments %}
+        <div class="register admin-register">
+          <div class="register-head admin-payment-head">
+            <span>Payment ID & Receipt</span>
+            <span>Student Customer</span>
+            <span>Reserved Property</span>
+            <span>Deposit Amount</span>
+            <span>Status & Action</span>
+          </div>
+
+          {% for p in payments %}
+          <div class="register-row admin-payment-row">
+            <div>
+              <strong class="mono">{{ p.payment_id }}</strong>
+              <div class="mono reg-sub">Receipt: {{ p.receipt_number }}</div>
+              <div class="reg-sub mono">{{ p.created_at[:16] }}</div>
+            </div>
+
+            <div>
+              <strong>{{ p.student_name }}</strong>
+              <div class="reg-sub mono">{{ p.student_email }}</div>
+              <div class="reg-sub mono">{{ p.student_phone or 'No phone' }}</div>
+            </div>
+
+            <div>
+              <strong class="reg-name">{{ p.listing_name }}</strong>
+              <div class="reg-sub mono">{{ p.payment_method }}</div>
+            </div>
+
+            <div>
+              <strong class="mono" style="color: var(--stamp-green); font-size: 16px;">₹{{ p.amount }}</strong>
+              <div class="reg-sub">Advance Token</div>
+            </div>
+
+            <div class="admin-row-actions">
+              <button 
+                type="button" 
+                class="btn btn-sm btn-ghost" 
+                onclick="loadAndShowReceipt('{{ p.payment_id }}')"
+              >
+                Inspect Receipt
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state-card small">
+          <p>No advance payments recorded yet.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Listings Registry Management -->
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <div>
+          <h2>Property Inventory & Registry Control</h2>
+          <p class="section-sub">Update vacancy statuses, inspect rents, or remove retired listings.</p>
+        </div>
+      </div>
+
+      <div class="register admin-register">
+        <div class="register-head admin-room-head">
+          <span>Property Name & Photo</span>
+          <span>Room Type</span>
+          <span>Rent & Deposit</span>
+          <span>Vacancy Status</span>
+          <span>Management</span>
+        </div>
+
+        {% for item in listings %}
+        <div class="register-row admin-room-row">
+          <div>
+            <strong class="reg-name">{{ item.name }}</strong>
+            <div class="reg-sub">📍 {{ item.area }}</div>
+            <div class="reg-sub mono">Owner Contact: {{ item.contact_phone or '+91 94432 12000' }}</div>
+          </div>
+
+          <div>
+            <span class="mono">{{ item.room_type }} &bull; {{ item.gender_pref }}</span>
+          </div>
+
+          <div class="mono">
+            <strong>₹{{ "{:,}".format(item.rent_monthly) }}/mo</strong>
+            <div class="reg-sub">Deposit: ₹{{ "{:,}".format(item.deposit) }}</div>
+          </div>
+
+          <div>
+            <form action="{{ url_for('admin_update_listing_status', listing_id=item.id) }}" method="POST" class="inline-status-form">
+              <select name="status" onchange="this.form.submit()" class="status-quick-select">
+                <option value="Vacant" {% if item.status == 'Vacant' %}selected{% endif %}>🟢 Vacant</option>
+                <option value="1 spot left" {% if item.status == '1 spot left' %}selected{% endif %}>🟡 1 spot left</option>
+                <option value="Occupied" {% if item.status == 'Occupied' %}selected{% endif %}>🔴 Occupied</option>
+              </select>
+            </form>
+          </div>
+
+          <div class="admin-row-actions">
+            <a href="{{ url_for('listings') }}?q={{ item.name }}" class="btn btn-sm btn-ghost" target="_blank">
+              View
+            </a>
+            <form action="{{ url_for('admin_delete_listing', listing_id=item.id) }}" method="POST" onsubmit="return confirm('Permanently remove {{ item.name }} from registry?')">
+              <button type="submit" class="btn btn-sm btn-ghost-red">Delete</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Registered Students Overview -->
+    <div class="admin-section">
+      <div class="admin-section-head">
+        <div>
+          <h2>Registered Campus Students ({{ users|length }})</h2>
+          <p class="section-sub">Students verified with active RentEase credentials.</p>
+        </div>
+      </div>
+
+      <div class="register admin-register">
+        <div class="register-head admin-user-head">
+          <span>Student Name</span>
+          <span>Email</span>
+          <span>Role</span>
+          <span>College / Dept</span>
+        </div>
+
+        {% for u in users %}
+        <div class="register-row admin-user-row">
+          <div>
+            <strong>{{ u.name }}</strong>
+            <div class="reg-sub mono">{{ u.phone or 'No phone' }}</div>
+          </div>
+          <div class="mono">{{ u.email }}</div>
+          <div>
+            <span class="role-badge role-{{ u.role }}">{{ u.role | upper }}</span>
+          </div>
+          <div>{{ u.college or 'Campus Resident' }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add New Room Listing with Photo Upload -->
+<div id="addListingModal" class="modal-overlay hidden">
+  <div class="modal-card modal-card-lg">
+    <div class="modal-header">
+      <div class="auth-badge">REGISTRY ENROLLMENT</div>
+      <h3>Add New Property / Room</h3>
+      <p class="modal-sub">Enroll a new student residence or PG into the campus database with photos.</p>
+      <button type="button" class="modal-close" onclick="closeAddListingModal()">&times;</button>
+    </div>
+
+    <form action="{{ url_for('admin_add_listing') }}" method="POST" enctype="multipart/form-data" class="add-listing-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="new_name" class="form-label">Property / PG Name</label>
+          <input type="text" id="new_name" name="name" class="form-input" required placeholder="e.g. Royal Crown Student PG">
+        </div>
+        <div class="form-group">
+          <label for="new_area" class="form-label">Area / Distance from Gate</label>
+          <input type="text" id="new_area" name="area" class="form-input" required placeholder="e.g. 3 min walk from Gate 1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="new_address" class="form-label">Full Street Address</label>
+        <input type="text" id="new_address" name="address" class="form-input" required placeholder="e.g. 24 Annur Road, Near Bus Stand">
+      </div>
+
+      <!-- Photo Upload & Style Presets -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="room_photo" class="form-label">Upload Room Image (Optional)</label>
+          <input type="file" id="room_photo" name="room_photo" class="form-input" accept="image/*">
+          <span class="form-hint">Upload JPG, PNG, or WebP photo</span>
+        </div>
+        <div class="form-group">
+          <label for="preset_style" class="form-label">Or Pick Curated Gallery Preset</label>
+          <select id="preset_style" name="preset_style" class="form-select">
+            <option value="modern" selected>Modern Hostel Bedroom & Desk</option>
+            <option value="cozy">Cozy Dual-Bed Studio</option>
+            <option value="single">Private Single AC Room</option>
+            <option value="luxury">Luxury Apartment Suite</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="new_rent" class="form-label">Monthly Rent (₹)</label>
+          <input type="number" id="new_rent" name="rent_monthly" class="form-input mono" required placeholder="6000">
+        </div>
+        <div class="form-group">
+          <label for="new_deposit" class="form-label">Security Deposit (₹)</label>
+          <input type="number" id="new_deposit" name="deposit" class="form-input mono" required placeholder="10000">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="new_room_type" class="form-label">Room Type</label>
+          <select id="new_room_type" name="room_type" class="form-select">
+            <option value="Single">Single Private Room</option>
+            <option value="Double" selected>Double Sharing</option>
+            <option value="Triple">Triple Sharing</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="new_gender" class="form-label">Resident Gender Policy</label>
+          <select id="new_gender" name="gender_pref" class="form-select">
+            <option value="Boys">Boys Only</option>
+            <option value="Girls">Girls Only</option>
+            <option value="Any" selected>Any / Unisex</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="new_status" class="form-label">Initial Availability</label>
+          <select id="new_status" name="status" class="form-select">
+            <option value="Vacant" selected>Vacant (Move-In Ready)</option>
+            <option value="1 spot left">1 spot left</option>
+            <option value="Occupied">Occupied</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="new_phone" class="form-label">Owner Contact Number</label>
+          <input type="tel" id="new_phone" name="contact_phone" class="form-input mono" required placeholder="+91 98421 00100">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="new_amenities" class="form-label">Amenities (Comma separated)</label>
+        <input 
+          type="text" 
+          id="new_amenities" 
+          name="amenities" 
+          class="form-input" 
+          required 
+          value="High-Speed Wi-Fi, 3 Times Food, RO Water, Power Backup"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="new_desc" class="form-label">Description & Highlights</label>
+        <textarea id="new_desc" name="description" class="form-textarea" rows="3" placeholder="Brief summary of room features, nearby food joints, rules..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeAddListingModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Enroll Listing in Registry &rarr;</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openAddListingModal() {
+    const modal = document.getElementById('addListingModal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeAddListingModal() {
+    const modal = document.getElementById('addListingModal');
+    if (modal) modal.classList.add('hidden');
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block title %}My Student Dashboard — RentEase{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="wrap">
+    <div class="page-header-content">
+      <div class="student-profile-summary">
+        <div class="student-avatar-lg">{{ current_user.avatar_initials or 'ST' }}</div>
+        <div>
+          <div class="section-badge">STUDENT DESK</div>
+          <h1>{{ current_user.name }}</h1>
+          <p class="page-header-sub">
+            <span class="mono">{{ current_user.email }}</span> &bull; {{ current_user.college or 'Registered Student' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="dashboard-stats-strip">
+        <div class="dash-stat">
+          <span class="dash-stat-val mono">{{ visits|length }}</span>
+          <span class="dash-stat-label">Scheduled Visits</span>
+        </div>
+        <div class="dash-stat">
+          <span class="dash-stat-val mono">{{ payments|length }}</span>
+          <span class="dash-stat-label">Spots Reserved</span>
+        </div>
+        <div class="dash-stat">
+          <span class="dash-stat-val mono">{{ saved_listings|length }}</span>
+          <span class="dash-stat-label">Saved Rooms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-content">
+  <div class="wrap">
+    <!-- Scheduled Room Visits Section -->
+    <div class="dash-section">
+      <div class="dash-section-head">
+        <div>
+          <h2>Scheduled In-Person Room Visits</h2>
+          <p class="section-sub">Inspect property cleanliness, amenities, and verify safety directly with owners.</p>
+        </div>
+        <a href="{{ url_for('listings') }}" class="btn btn-ghost btn-sm">+ Schedule Another Visit</a>
+      </div>
+
+      {% if visits %}
+        <div class="register">
+          <div class="register-head">
+            <span>Residence</span>
+            <span>Date & Time</span>
+            <span>Status</span>
+            <span>Host WhatsApp / Contact</span>
+          </div>
+          {% for v in visits %}
+          <div class="register-row">
+            <div>
+              <span class="reg-name">{{ v.listing_name }}</span>
+              <span class="reg-sub mono">📍 {{ v.area }} &bull; ₹{{ "{:,}".format(v.rent_monthly) }}/mo</span>
+            </div>
+            <div class="mono">
+              <strong>{{ v.visit_date }}</strong>
+              <div class="reg-sub">{{ v.visit_time }}</div>
+            </div>
+            <div>
+              <span class="status-tag {% if v.status == 'Confirmed' %}status-open{% elif v.status == 'Declined' %}status-full{% else %}status-low{% endif %}">
+                {{ v.status }}
+              </span>
+            </div>
+            <div>
+              <span class="mono">{{ v.contact_phone or '+91 94432 12000' }}</span>
+              {% if v.message %}
+                <div class="reg-note">“{{ v.message }}”</div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state-card small">
+          <p>No room visits scheduled yet. Browse available rooms and reserve your preferred time slot.</p>
+          <a href="{{ url_for('listings') }}" class="btn btn-primary btn-sm">Find Rooms to Visit</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Advance Token Deposits & Receipts Section -->
+    <div class="dash-section">
+      <div class="dash-section-head">
+        <div>
+          <h2>Token Deposits & Spot Reservations ({{ payments|length }})</h2>
+          <p class="section-sub">Digital payment receipts for rooms held under advance token deposit.</p>
+        </div>
+      </div>
+
+      {% if payments %}
+        <div class="register">
+          <div class="register-head payment-head">
+            <span>Receipt # & Date</span>
+            <span>Reserved Residence</span>
+            <span>Amount Paid</span>
+            <span>Payment Mode</span>
+            <span>Voucher</span>
+          </div>
+          {% for p in payments %}
+          <div class="register-row payment-row">
+            <div>
+              <strong class="mono">{{ p.receipt_number }}</strong>
+              <div class="reg-sub mono">{{ p.created_at[:10] }}</div>
+            </div>
+            <div>
+              <span class="reg-name">{{ p.listing_name }}</span>
+              <div class="reg-sub mono">📍 {{ p.area }}</div>
+            </div>
+            <div>
+              <strong class="mono" style="color: var(--stamp-green); font-size: 16px;">₹{{ p.amount }}</strong>
+              <div class="reg-sub">Advance Hold</div>
+            </div>
+            <div>
+              <span class="mono">{{ p.payment_method }}</span>
+            </div>
+            <div>
+              <button 
+                type="button" 
+                class="btn btn-sm btn-ghost" 
+                onclick="loadAndShowReceipt('{{ p.payment_id }}')"
+              >
+                📄 View Receipt
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state-card small">
+          <p>No advance spot deposits paid yet. You can hold room vacancies with a ₹500 token deposit in the directory.</p>
+          <a href="{{ url_for('listings') }}" class="btn btn-ghost btn-sm">Browse Rooms to Reserve</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Automated Notification Alerts Log -->
+    <div class="dash-section">
+      <div class="dash-section-head">
+        <div>
+          <h2>WhatsApp & Email Notification Alerts</h2>
+          <p class="section-sub">Automated dispatches sent for your bookings, visits, and confirmations.</p>
+        </div>
+      </div>
+
+      {% if notifications %}
+        <div class="notification-feed">
+          {% for n in notifications %}
+          <div class="notification-item">
+            <div class="notif-channel-badge {% if n.channel == 'WhatsApp' %}notif-wa{% elif n.channel == 'Email' %}notif-email{% else %}notif-sys{% endif %}">
+              {% if n.channel == 'WhatsApp' %}💬 WhatsApp{% elif n.channel == 'Email' %}✉️ Email{% else %}ℹ️ System{% endif %}
+            </div>
+            <div class="notif-content">
+              <strong class="notif-title">{{ n.title }}</strong>
+              <p class="notif-msg">{{ n.message }}</p>
+              <span class="notif-time mono">{{ n.created_at }} &bull; Sent to {{ n.recipient_contact }}</span>
+            </div>
+            <span class="notif-status-pill mono">✓ {{ n.status }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state-card small">
+          <p>No recent alerts dispatched.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Saved Listings Section -->
+    <div class="dash-section">
+      <div class="dash-section-head">
+        <div>
+          <h2>Bookmarked Rooms & PGs</h2>
+          <p class="section-sub">Shortlisted properties for quick comparison before finalizing your move.</p>
+        </div>
+      </div>
+
+      {% if saved_listings %}
+        <div class="cards-grid catalog-grid">
+          {% for item in saved_listings %}
+          <div class="room-card">
+            <div class="room-card-header">
+              <div class="room-type-badge">{{ item.room_type }} Sharing &bull; {{ item.gender_pref }}</div>
+              <span class="status-tag {% if item.status_kind == 'open' %}status-open{% elif item.status_kind == 'low' %}status-low{% else %}status-full{% endif %}">
+                {{ item.status }}
+              </span>
+            </div>
+
+            <h3 class="room-title">{{ item.name }}</h3>
+            <p class="room-area mono">📍 {{ item.area }}</p>
+
+            <div class="room-card-footer">
+              <div class="room-price">
+                <span class="price-val mono">₹{{ "{:,}".format(item.rent_monthly) }}</span>
+                <span class="price-period">/ mo</span>
+              </div>
+              <a href="{{ url_for('listings') }}?q={{ item.name }}" class="btn btn-primary btn-sm">
+                View in Register &rarr;
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state-card small">
+          <p>You haven't bookmarked any rooms yet. Click the <strong>★ Save</strong> button on any listing in the directory.</p>
+          <a href="{{ url_for('listings') }}" class="btn btn-ghost btn-sm">Explore Room Directory</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Roommate Matching Profile Status -->
+    <div class="dash-section">
+      <div class="dash-section-head">
+        <div>
+          <h2>Roommate Matching Profile</h2>
+          <p class="section-sub">Your published preferences in the campus roommate register.</p>
+        </div>
+        <a href="{{ url_for('roommates') }}" class="btn btn-primary btn-sm">Go to Roommate Directory &rarr;</a>
+      </div>
+
+      {% if roommate_profile %}
+        <div class="roommate-summary-box">
+          <div class="roommate-top">
+            <div class="roommate-avatar">{{ current_user.avatar_initials or 'ST' }}</div>
+            <div>
+              <h3>{{ current_user.name }}</h3>
+              <p class="mono">{{ roommate_profile.major }} &bull; Max Budget: ₹{{ "{:,}".format(roommate_profile.budget_max) }}/mo</p>
+            </div>
+          </div>
+          <p class="roommate-bio">“{{ roommate_profile.bio }}”</p>
+          <div class="roommate-habits-grid">
+            <div class="habit-item"><span class="habit-label">Sleep:</span> {{ roommate_profile.sleep_schedule }}</div>
+            <div class="habit-item"><span class="habit-label">Diet:</span> {{ roommate_profile.food_pref }}</div>
+            <div class="habit-item"><span class="habit-label">Study:</span> {{ roommate_profile.study_habit }}</div>
+            <div class="habit-item"><span class="habit-label">Cleanliness:</span> {{ roommate_profile.cleanliness }}</div>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty-state-card small">
+          <p>You have not published your roommate lifestyle profile yet. Publish your sleep, study, and food preferences to get discovered by compatible peers.</p>
+          <a href="{{ url_for('roommates') }}" class="btn btn-primary btn-sm">Create Lifestyle Profile</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
