@@ -262,81 +262,126 @@ h1, h2, h3, h4 {
 .flash-text { flex: 1; }
 .flash-close { background: none; border: none; font-size: 18px; cursor: pointer; color: inherit; }
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons & Actions Hierarchy ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 11px 20px;
-  font-size: 14.5px;
+  padding: 10px 18px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  border: none;
-  transition: all 0.15s ease;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: var(--font-body);
+  text-decoration: none;
+  line-height: 1.3;
 }
 
+/* THE MAIN BUTTON: Primary Action (dominant, standout emerald, high-contrast) */
 .btn-primary {
-  background: var(--ink);
-  color: var(--paper) !important;
-  box-shadow: var(--shadow-sm);
+  background: #15803D !important;
+  color: #ffffff !important;
+  border-color: #15803D !important;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  box-shadow: 0 2px 8px rgba(21, 128, 61, 0.32);
 }
 .btn-primary:hover {
-  background: var(--stamp-red);
-  transform: translate(-1px, -1px);
-  box-shadow: var(--shadow-md);
+  background: #166534 !important;
+  border-color: #166534 !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.4);
+}
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(21, 128, 61, 0.2);
 }
 
-.btn-ghost {
-  border: 1.5px solid var(--ink);
-  background: transparent;
+/* SECONDARY BUTTON: Subordinate, clean, non-competing */
+.btn-secondary, .btn-ghost {
+  border: 1.5px solid var(--paper-line-strong);
+  background: #ffffff;
   color: var(--ink);
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-.btn-ghost:hover {
-  background: var(--ink);
-  color: var(--paper) !important;
+.btn-secondary:hover, .btn-ghost:hover {
+  background: var(--paper-card);
+  border-color: var(--ink);
+  color: var(--ink) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.btn-whatsapp {
-  background: var(--whatsapp-bg);
-  color: #128C7E !important;
-  border: 1.5px solid #128C7E;
-  font-weight: 600;
+/* SUBTLE WHATSAPP OPTION: Clean soft pill, secondary to main booking */
+.btn-whatsapp-subtle, .btn-whatsapp-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #F0FDF4;
+  color: #166534 !important;
+  border: 1px solid #BBF7D0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: var(--font-body);
 }
-.btn-whatsapp:hover {
-  background: #128C7E;
-  color: #fff !important;
+.btn-whatsapp-subtle:hover, .btn-whatsapp-icon:hover {
+  background: #DCFCE7;
+  border-color: #86EFAC;
+  color: #14532D !important;
+  transform: translateY(-1px);
 }
 
 .btn-light {
-  background: var(--paper);
+  background: #ffffff;
   color: var(--ink) !important;
+  border: 1.5px solid #E2E5D8;
   font-weight: 600;
-  box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-.btn-light:hover { background: #fff; transform: translateY(-1px); }
+.btn-light:hover {
+  background: #FAFBF8;
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
 
 .btn-ghost-white {
-  border: 1.5px solid var(--paper);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
   background: transparent;
-  color: var(--paper) !important;
+  color: #ffffff !important;
 }
-.btn-ghost-white:hover { background: var(--paper); color: var(--ink) !important; }
+.btn-ghost-white:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+  color: #ffffff !important;
+}
 
-.btn-sm { padding: 6px 12px; font-size: 12.5px; }
+.btn-sm { padding: 6px 12px; font-size: 12.5px; font-weight: 600; border-radius: 6px; }
+.btn-lg { padding: 13px 26px; font-size: 15.5px; font-weight: 600; border-radius: 10px; }
 .btn-block { width: 100%; }
 
 .btn-primary-green {
   background: var(--stamp-green);
   color: #fff;
-  border: 1px solid var(--stamp-green);
+  border: 1.5px solid var(--stamp-green);
 }
-.btn-primary-green:hover { background: #2B4E28; }
+.btn-primary-green:hover {
+  background: #2D522A;
+  border-color: #2D522A;
+}
 
 .btn-ghost-red {
   background: transparent;
-  border: 1px solid var(--stamp-red);
+  border: 1.5px solid var(--stamp-red);
   color: var(--stamp-red);
 }
 .btn-ghost-red:hover { background: var(--stamp-red); color: #fff; }
@@ -349,12 +394,43 @@ h1, h2, h3, h4 {
   cursor: pointer;
   font-family: var(--font-mono);
   color: var(--ink-soft);
+  border-radius: 6px;
   transition: all 0.15s;
 }
 .btn-save-bookmark:hover, .btn-save-bookmark.saved {
   border-color: var(--tag-tan);
   color: #9E7422;
   background: var(--tag-tan-bg);
+}
+
+.card-bookmark-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+.card-bookmark-btn:hover {
+  transform: scale(1.1);
+  background: #ffffff;
+  color: #D97706;
+}
+.card-bookmark-btn.saved {
+  background: #ffffff;
+  color: #D97706;
+  border-color: #F59E0B;
 }
 
 /* ---------- Badges & Tags ---------- */
@@ -492,15 +568,40 @@ h1, h2, h3, h4 {
 .search-divider { width: 1px; height: 38px; background: var(--paper-line-strong); }
 
 .search-btn {
-  border: none;
-  border-left: 2px solid var(--ink);
+  border: none !important;
   height: 58px;
+  padding: 0 24px;
   border-radius: 0;
-  box-shadow: none;
+  box-shadow: none !important;
   white-space: nowrap;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.search-btn:hover {
+  transform: none !important;
 }
 
-.hero-actions { display: flex; gap: 14px; }
+.hero-actions-simple {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -14px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.hero-subtle-hint {
+  color: var(--ink-soft);
+}
+.hero-secondary-link {
+  color: #15803D;
+  font-weight: 600;
+  border-bottom: 1.5px solid transparent;
+  transition: all 0.15s ease;
+}
+.hero-secondary-link:hover {
+  color: #166534;
+  border-bottom-color: #166534;
+}
 
 .tally {
   display: flex;
@@ -529,7 +630,79 @@ h1, h2, h3, h4 {
   margin-top: 4px;
 }
 
-/* ---------- Hero Sample Card & Match Stamp ---------- */
+/* ---------- Hero Visual Showcase Card & Match Stamp ---------- */
+.hero-visual-card {
+  background: var(--paper-card);
+  border: 2px solid var(--ink);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hero-visual-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.hero-img-box {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  background: #2B332F;
+}
+
+.hero-room-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.hero-visual-card:hover .hero-room-img {
+  transform: scale(1.03);
+}
+
+.hero-img-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+
+.hero-card-details {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.hero-card-title {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.hero-card-area {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 16px;
+}
+
+.hero-card-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--paper-line);
+}
+
 .hero-entry { position: relative; }
 .entry-caption-badge {
   font-family: var(--font-mono);
@@ -563,10 +736,10 @@ h1, h2, h3, h4 {
 
 .match-stamp {
   position: absolute;
-  top: -22px;
-  right: -16px;
-  width: 82px;
-  height: 82px;
+  top: -16px;
+  right: -14px;
+  width: 78px;
+  height: 78px;
   border-radius: 50%;
   border: 2px solid var(--stamp-red);
   color: var(--stamp-red);
@@ -577,9 +750,10 @@ h1, h2, h3, h4 {
   transform: rotate(-10deg);
   background: var(--paper);
   box-shadow: var(--shadow-sm);
+  z-index: 3;
 }
 .match-number { font-family: var(--font-mono); font-size: 20px; font-weight: 700; line-height: 1; }
-.match-word { font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); }
+.match-word { font-size: 10.5px; text-transform: uppercase; font-family: var(--font-mono); }
 
 /* ---------- How It Works ---------- */
 .how {
@@ -632,17 +806,18 @@ h1, h2, h3, h4 {
 }
 
 .room-card {
-  background: var(--paper-card);
+  background: #ffffff;
   border: 1.5px solid var(--ink);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
   overflow: hidden;
 }
 .room-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .room-card-photo-wrapper {
@@ -650,7 +825,7 @@ h1, h2, h3, h4 {
   width: 100%;
   height: 200px;
   overflow: hidden;
-  background: #2B332F;
+  background: #232B26;
   border-bottom: 1.5px solid var(--ink);
 }
 
@@ -658,7 +833,7 @@ h1, h2, h3, h4 {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.35s ease;
 }
 .room-card:hover .room-card-thumb { transform: scale(1.04); }
 
@@ -666,25 +841,28 @@ h1, h2, h3, h4 {
   position: absolute;
   bottom: 10px;
   left: 10px;
-  background: rgba(30, 39, 35, 0.85);
+  background: rgba(24, 35, 28, 0.85);
   color: #fff;
-  border: 1px solid var(--paper);
-  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 4px 10px;
+  border-radius: 6px;
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 11px;
   cursor: pointer;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(4px);
 }
-.photo-gallery-badge:hover { background: var(--stamp-red); }
+.photo-gallery-badge:hover { background: var(--stamp-red); border-color: var(--stamp-red); }
 
 .room-thumb-status {
   position: absolute;
   top: 10px;
   right: 10px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .room-card-content {
-  padding: 20px;
+  padding: 18px 20px 20px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -694,20 +872,28 @@ h1, h2, h3, h4 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.room-title { font-size: 19px; margin-bottom: 4px; }
-.room-area { font-size: 13px; color: var(--stamp-red); margin: 0 0 2px; }
-.room-address { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 12px; }
+.room-title { font-size: 18.5px; margin-bottom: 4px; font-weight: 600; line-height: 1.25; }
+.room-area { font-size: 13px; color: var(--ink-soft); margin: 0 0 10px; }
+.room-address { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 10px; }
 
 .room-desc { font-size: 13px; color: var(--ink-soft); margin-bottom: 12px; line-height: 1.5; }
 
 .room-amenities {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
   margin-bottom: 16px;
+}
+.amenity-chip {
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  color: var(--ink-soft);
+  padding: 3px 8px;
+  font-size: 11.5px;
+  border-radius: 4px;
 }
 
 .room-card-specs {
@@ -717,28 +903,61 @@ h1, h2, h3, h4 {
   border-top: 1px solid var(--paper-line);
   border-bottom: 1px solid var(--paper-line);
   font-size: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .spec-label { color: var(--ink-soft); }
 
 .room-card-footer {
   margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--paper-line);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.room-price-stack {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: baseline;
 }
 
 .room-price { display: flex; align-items: baseline; gap: 4px; }
-.price-val { font-size: 20px; font-weight: 700; color: var(--ink); }
-.price-period { font-size: 11.5px; color: var(--ink-soft); }
+.price-val { font-size: 21px; font-weight: 700; color: var(--ink); }
+.price-period { font-size: 12px; color: var(--ink-soft); }
 
+.room-deposit-sub {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Clear Visual Hierarchy for Card Actions */
 .card-action-buttons {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+.card-action-buttons .btn-primary {
+  flex: 1;
+  min-height: 42px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-align: center;
+}
+.card-action-buttons .btn-whatsapp-subtle,
+.card-action-buttons .btn-whatsapp-icon {
+  flex-shrink: 0;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 /* ---------- Photo Gallery Lightbox Modal ---------- */
@@ -948,32 +1167,73 @@ h1, h2, h3, h4 {
 }
 
 .filter-card {
-  background: var(--paper-card);
+  background: #ffffff;
   border: 1.5px solid var(--ink);
-  padding: 20px;
-  margin-bottom: 36px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .filter-grid {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr auto;
-  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
   align-items: flex-end;
 }
 
-.filter-group { display: flex; flex-direction: column; gap: 6px; }
-.filter-label { font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; color: var(--ink-soft); }
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filter-group.search-group {
+  flex: 2;
+  min-width: 220px;
+}
+
+.filter-label {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
 .filter-input, .filter-select {
-  border: 1px solid var(--paper-line-strong);
-  background: var(--paper);
+  border: 1.5px solid var(--paper-line-strong);
+  background: var(--paper-card);
   padding: 9px 12px;
   font-size: 14px;
   color: var(--ink);
   font-family: var(--font-body);
+  border-radius: 8px;
+  height: 42px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+.filter-input:focus, .filter-select:focus {
+  border-color: var(--ink);
+  background: #ffffff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(30, 39, 35, 0.12);
 }
 
-.filter-actions { display: flex; gap: 8px; }
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.filter-actions .btn {
+  height: 42px;
+  padding: 0 20px;
+  white-space: nowrap;
+}
 
 /* ---------- Roommate Teaser & Matching Section ---------- */
 .roommate-teaser-section { padding: 40px 0 80px; }
@@ -1019,52 +1279,70 @@ h1, h2, h3, h4 {
 
 /* Matcher Filter Card in /roommates */
 .matcher-filter-card {
-  background: var(--paper-card);
-  border: 2px solid var(--ink);
-  padding: 28px;
-  margin-bottom: 36px;
-  box-shadow: var(--shadow-md);
+  background: #ffffff;
+  border: 1.5px solid var(--ink);
+  border-radius: 12px;
+  padding: 22px 26px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-.matcher-filter-title { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.matcher-filter-title h3 { font-size: 22px; }
-.filter-desc { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 20px; }
+.matcher-filter-title { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.matcher-filter-title h3 { font-size: 20px; font-weight: 600; }
+.filter-desc { color: var(--ink-soft); font-size: 14px; margin-bottom: 18px; }
 
 .matcher-controls-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
 }
-.matcher-field { display: flex; flex-direction: column; gap: 6px; }
-.matcher-label { font-size: 11.5px; font-family: var(--font-mono); text-transform: uppercase; color: var(--ink-soft); }
+.matcher-field { display: flex; flex-direction: column; gap: 5px; }
+.matcher-label { font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
 .matcher-select {
-  border: 1px solid var(--paper-line-strong);
-  background: var(--paper);
-  padding: 10px 12px;
+  border: 1.5px solid var(--paper-line-strong);
+  background: var(--paper-card);
+  padding: 9px 12px;
   font-size: 14px;
+  border-radius: 8px;
+  height: 42px;
+  box-sizing: border-box;
+  color: var(--ink);
+  font-family: var(--font-body);
+  transition: all 0.15s ease;
+}
+.matcher-select:focus {
+  border-color: var(--ink);
+  background: #ffffff;
+  outline: none;
 }
 
 /* Roommates Grid */
 .roommates-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
 }
 
 .roommate-card {
-  background: var(--paper-card);
+  background: #ffffff;
   border: 1.5px solid var(--ink);
-  padding: 24px;
+  border-radius: 12px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   position: relative;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+.roommate-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .roommate-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .roommate-avatar {
@@ -1076,15 +1354,16 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-.roommate-info { flex: 1; }
-.roommate-name { font-size: 18px; margin-bottom: 2px; }
-.roommate-major { font-size: 12px; color: var(--stamp-red); }
-.roommate-college { font-size: 12px; color: var(--ink-soft); }
+.roommate-info { flex: 1; min-width: 0; }
+.roommate-name { font-size: 17px; margin-bottom: 2px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.roommate-major { font-size: 12px; color: var(--ink-soft); margin: 0; }
+.roommate-college { font-size: 11.5px; color: var(--ink-light); margin: 0; }
 
 .compatibility-badge {
   display: flex;
@@ -1094,30 +1373,39 @@ h1, h2, h3, h4 {
   color: var(--stamp-green);
   background: var(--stamp-green-bg);
   padding: 4px 8px;
+  border-radius: 6px;
   line-height: 1;
 }
-.match-score { font-family: var(--font-mono); font-size: 16px; font-weight: 700; }
-.match-caption { font-size: 9px; text-transform: uppercase; font-family: var(--font-mono); }
+.match-score { font-family: var(--font-mono); font-size: 15px; font-weight: 700; }
+.match-caption { font-size: 8.5px; text-transform: uppercase; font-family: var(--font-mono); }
 
 .roommate-bio-box {
-  background: var(--paper);
-  border-left: 3px solid var(--stamp-red);
-  padding: 10px 14px;
-  margin-bottom: 16px;
+  background: var(--paper-card);
+  border-left: 3px solid var(--ink);
+  border-radius: 0 6px 6px 0;
+  padding: 9px 12px;
+  margin-bottom: 14px;
 }
-.roommate-bio { font-size: 13.5px; font-style: italic; color: var(--ink-soft); margin: 0; }
+.roommate-bio { font-size: 13px; font-style: italic; color: var(--ink-soft); margin: 0; line-height: 1.45; }
 
 .roommate-habits-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  font-size: 12.5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 0;
   border-top: 1px solid var(--paper-line);
   border-bottom: 1px solid var(--paper-line);
-  padding: 10px 0;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
-.habit-label { color: var(--ink-soft); }
+.habit-item {
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+.habit-label { font-weight: 600; color: var(--ink); margin-right: 2px; }
 .habit-val { font-weight: 500; }
 
 .roommate-footer {
@@ -1125,9 +1413,16 @@ h1, h2, h3, h4 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  padding-top: 4px;
 }
 .budget-label { font-size: 11px; color: var(--ink-soft); display: block; }
-.budget-val { font-size: 16px; font-weight: 700; }
+.budget-val { font-size: 16px; font-weight: 700; color: var(--ink); }
+.roommate-contact .btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
 
 /* ---------- Student Dashboard ---------- */
 .student-profile-summary {

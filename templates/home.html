@@ -7,12 +7,11 @@
   <div class="wrap hero-grid">
     <div class="hero-copy">
       <div class="hero-pill">
-        <span class="pill-dot"></span> Official Campus Housing Registry &bull; Verified 2026
+        <span class="pill-dot"></span> Verified Campus Housing &bull; 2026
       </div>
-      <h1>Find verified rooms. Match roommates who actually fit.</h1>
+      <h1>Find Verified Student Rooms &amp; Compatible Roommates.</h1>
       <p class="hero-sub">
-        RentEase replaces chaotic WhatsApp groups and misleading flyers with a verified collegiate housing register.
-        Search certified PGs and hostels within walking distance of campus, and pair with roommates based on real daily habits — sleep schedules, study routines, and budgets.
+        Explore verified PGs and hostels within walking distance of KSRCT. Zero broker fees, authentic room photos, and lifestyle-based roommate matching.
       </p>
 
       <!-- Quick Search Bar in Hero -->
@@ -25,22 +24,22 @@
         <div class="search-field">
           <label for="gender_pref" class="search-label">Occupant Preference</label>
           <select name="gender_pref" id="gender_pref" class="search-select">
-            <option value="">All (Boys & Girls)</option>
+            <option value="">All (Boys &amp; Girls)</option>
             <option value="Boys">Boys Accommodations</option>
             <option value="Girls">Girls Hostels / PGs</option>
           </select>
         </div>
         <button type="submit" class="btn btn-primary search-btn">
-          Search Register &rarr;
+          Search Rooms &rarr;
         </button>
       </form>
 
-      <div class="hero-actions">
-        <a href="{{ url_for('listings') }}" class="btn btn-primary">Browse All Open Rooms</a>
-        <a href="{{ url_for('roommates') }}" class="btn btn-ghost">Try Roommate Matcher</a>
+      <div class="hero-actions-simple">
+        <span class="hero-subtle-hint">Need a flatmate?</span>
+        <a href="{{ url_for('roommates') }}" class="hero-secondary-link">Match Compatible Roommates &rarr;</a>
       </div>
 
-      <!-- Dynamic Live Tally Counters -->
+      <!-- Live Counters -->
       <div class="tally">
         {% for stat in stats %}
         <div class="tally-item">
@@ -51,46 +50,35 @@
       </div>
     </div>
 
-    <!-- Right Side Hero Entry Card -->
-    <div class="hero-entry" aria-hidden="true">
-      <div class="entry-caption-badge">SAMPLE RECORD FROM CAMPUS REGISTRY</div>
-      <div class="entry-card">
-        <div class="entry-row">
-          <span class="entry-key">Residence</span>
-          <span class="entry-val bold">Sunrise Executive PG, Room 14</span>
-        </div>
-        <div class="entry-row">
-          <span class="entry-key">Location</span>
-          <span class="entry-val">4 min walk from Gate 2</span>
-        </div>
-        <div class="entry-row">
-          <span class="entry-key">Monthly Rent</span>
-          <span class="entry-val mono bold">₹6,500 / month</span>
-        </div>
-        <div class="entry-row">
-          <span class="entry-key">Included</span>
-          <span class="entry-val">3x Meals, Fiber Wi-Fi, Power Backup</span>
-        </div>
-        <div class="entry-row">
-          <span class="entry-key">Availability</span>
-          <span class="entry-val">
-            <span class="status-tag status-open">Vacant (Move-in Ready)</span>
-          </span>
-        </div>
-        <div class="entry-row">
-          <span class="entry-key">Resident Rating</span>
-          <span class="entry-val mono">★ 4.8 / 5.0 (24 reviews)</span>
-        </div>
-
-        <div class="entry-card-action">
-          <a href="{{ url_for('listings') }}" class="btn btn-primary btn-sm btn-block">
-            Inspect Room Details & Book Slot &rarr;
-          </a>
-        </div>
-
+    <!-- Right Side Hero Visual Showcase Card -->
+    <div class="hero-visual-card" aria-label="Featured Campus Accommodation">
+      <div class="hero-img-box">
+        <img src="/static/images/rooms/sunrise_pg.jpg" alt="Sunrise Executive PG Room" class="hero-room-img">
+        <span class="status-tag status-open hero-img-badge">Move-In Ready</span>
         <div class="match-stamp">
-          <span class="match-number">94%</span>
+          <span class="match-number">96%</span>
           <span class="match-word">match</span>
+        </div>
+      </div>
+      <div class="hero-card-details">
+        <div class="hero-card-meta">
+          <span class="room-type-badge">Double Sharing &bull; Boys</span>
+          <span class="mono bold" style="color: var(--stamp-green); font-size: 13.5px;">★ 4.8</span>
+        </div>
+        <h3 class="hero-card-title">Sunrise Executive PG</h3>
+        <p class="hero-card-area">📍 4 min walk from Gate 2 &bull; 3x Meals &bull; Wi-Fi</p>
+        <div class="hero-card-price-row">
+          <div>
+            <span class="price-val mono">₹6,500</span>
+            <span class="price-period">/ month</span>
+          </div>
+          <button 
+            type="button" 
+            class="btn btn-primary btn-sm"
+            onclick="openBookingModal(1, 'Sunrise Executive PG', 'Near KSRCT Gate 2', '6500')"
+          >
+            Schedule Free Visit &rarr;
+          </button>
         </div>
       </div>
     </div>
@@ -100,18 +88,30 @@
 <!-- How It Works Section -->
 <section class="how" id="how">
   <div class="wrap">
-    <div class="section-badge">VERIFIED WORKFLOW</div>
-    <h2>From search to keys in hand, four transparent steps</h2>
-    <div class="steps">
-      {% for f in features %}
+    <div class="section-badge">SIMPLE 3-STEP PROCESS</div>
+    <h2>How RentEase Works</h2>
+    <div class="steps" style="grid-template-columns: repeat(3, 1fr);">
       <div class="step">
-        <span class="step-number">{{ f.tag }}</span>
+        <span class="step-number">01</span>
         <div class="step-body">
-          <h3>{{ f.title }}</h3>
-          <p>{{ f.text }}</p>
+          <h3>Search Rooms</h3>
+          <p>Browse verified PGs near campus filtered by budget, room type, and amenities.</p>
         </div>
       </div>
-      {% endfor %}
+      <div class="step">
+        <span class="step-number">02</span>
+        <div class="step-body">
+          <h3>Schedule Visit</h3>
+          <p>Pick a convenient slot to inspect the room and meet the host in person.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-number">03</span>
+        <div class="step-body">
+          <h3>Match Roommates</h3>
+          <p>Find campus peers with compatible study habits, sleep schedules, and lifestyles.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -124,44 +124,52 @@
         <div class="section-badge">CAMPUS INVENTORY</div>
         <h2>Open Rooms Near Campus</h2>
       </div>
-      <a href="{{ url_for('listings') }}" class="text-link">Explore Full Registry (All Rooms) &rarr;</a>
+      <a href="{{ url_for('listings') }}" class="text-link">Explore All Available Rooms &rarr;</a>
     </div>
 
     <div class="cards-grid">
       {% for item in listings %}
       <div class="room-card">
-        <div class="room-card-header">
-          <div class="room-type-badge">{{ item.room_type }} Sharing &bull; {{ item.gender_pref }}</div>
-          <span class="status-tag {% if item.status_kind == 'open' %}status-open{% elif item.status_kind == 'low' %}status-low{% else %}status-full{% endif %}">
+        <div class="room-card-photo-wrapper">
+          <img 
+            src="{{ item.image_url }}" 
+            alt="{{ item.name }}" 
+            class="room-card-thumb"
+            loading="lazy"
+          >
+          <span class="status-tag room-thumb-status {% if item.status_kind == 'open' %}status-open{% elif item.status_kind == 'low' %}status-low{% else %}status-full{% endif %}">
             {{ item.status }}
           </span>
         </div>
 
-        <h3 class="room-title">{{ item.name }}</h3>
-        <p class="room-area mono">📍 {{ item.area }}</p>
-        <p class="room-address">{{ item.address }}</p>
-
-        <div class="room-amenities">
-          {% for am in item.amenities.split(', ')[:3] %}
-            <span class="amenity-chip">{{ am }}</span>
-          {% endfor %}
-          {% if item.amenities.split(', ')|length > 3 %}
-            <span class="amenity-chip">+{{ item.amenities.split(', ')|length - 3 }} more</span>
-          {% endif %}
-        </div>
-
-        <div class="room-card-footer">
-          <div class="room-price">
-            <span class="price-val mono">₹{{ "{:,}".format(item.rent_monthly) }}</span>
-            <span class="price-period">/ month</span>
+        <div class="room-card-content">
+          <div class="room-card-header">
+            <div class="room-type-badge">{{ item.room_type }} Sharing &bull; {{ item.gender_pref }}</div>
+            <span class="mono bold" style="font-size: 13px; color: var(--ink-soft);">★ {{ item.rating }}</span>
           </div>
-          <button 
-            type="button" 
-            class="btn btn-primary btn-sm"
-            onclick="openBookingModal({{ item.id }}, '{{ item.name }}', '{{ item.area }}', '{{ item.rent_monthly }}')"
-          >
-            Book Visit
-          </button>
+
+          <h3 class="room-title">{{ item.name }}</h3>
+          <p class="room-area mono">📍 {{ item.area }}</p>
+
+          <div class="room-amenities">
+            {% for am in item.amenities.split(', ')[:3] %}
+              <span class="amenity-chip">{{ am }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="room-card-footer">
+            <div class="room-price">
+              <span class="price-val mono">₹{{ "{:,}".format(item.rent_monthly) }}</span>
+              <span class="price-period">/ mo</span>
+            </div>
+            <button 
+              type="button" 
+              class="btn btn-primary"
+              onclick="openBookingModal({{ item.id }}, '{{ item.name }}', '{{ item.area }}', '{{ item.rent_monthly }}')"
+            >
+              Schedule Free Visit &rarr;
+            </button>
+          </div>
         </div>
       </div>
       {% endfor %}
@@ -174,30 +182,24 @@
   <div class="wrap">
     <div class="roommate-teaser-card">
       <div class="teaser-content">
-        <div class="section-badge white">ROOMMATE ALGORITHM</div>
-        <h2>Tired of random roommates who keep you up at 3 AM?</h2>
+        <div class="section-badge white">ROOMMATE MATCHER</div>
+        <h2>Find roommates who share your habits and schedule.</h2>
         <p>
-          Fill out our 2-minute lifestyle checklist — study noise tolerance, bedtime hours, dietary restrictions, and budget. 
-          RentEase automatically calculates your compatibility score with registered campus peers.
+          Take a quick 2-minute lifestyle quiz. RentEase automatically calculates compatibility with registered college peers.
         </p>
         <div class="teaser-actions">
-          <a href="{{ url_for('roommates') }}" class="btn btn-light">
-            Launch Roommate Matcher &rarr;
+          <a href="{{ url_for('roommates') }}" class="btn btn-light btn-lg">
+            Find Compatible Roommates &rarr;
           </a>
-          {% if current_user and current_user.role == 'student' %}
-            <a href="{{ url_for('student_dashboard') }}" class="btn btn-ghost-white">
-              My Profile & Visits
-            </a>
-          {% endif %}
         </div>
       </div>
       <div class="teaser-graphic">
         <div class="match-sample-box">
           <div class="match-score-pill">96% Compatibility Match</div>
-          <p class="sample-names">Aarav Sharma & Priya Sundaram</p>
+          <p class="sample-names">Aarav Sharma &amp; Priya Sundaram</p>
           <ul class="sample-traits">
-            <li>✓ Both prefer silent study zones</li>
-            <li>✓ Both strictly vegetarian</li>
+            <li>✓ Both prefer quiet study environments</li>
+            <li>✓ Both vegetarian</li>
             <li>✓ Aligned on ₹6,000–₹7,000 monthly budget</li>
           </ul>
         </div>
@@ -205,63 +207,4 @@
     </div>
   </div>
 </section>
-
-<!-- Booking Modal (Shared) -->
-<div id="bookingModal" class="modal-overlay hidden">
-  <div class="modal-card">
-    <div class="modal-header">
-      <div class="auth-badge">VISIT SCHEDULE</div>
-      <h3 id="modalListingTitle">Schedule Room Visit</h3>
-      <p id="modalListingArea" class="modal-sub"></p>
-      <button type="button" class="modal-close" onclick="closeBookingModal()">&times;</button>
-    </div>
-
-    {% if current_user %}
-    <form id="bookingForm" onsubmit="submitVisitBooking(event)">
-      <input type="hidden" id="bookingListingId" name="listing_id">
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="visit_date" class="form-label">Preferred Date</label>
-          <input type="date" id="visit_date" name="visit_date" class="form-input mono" required>
-        </div>
-        <div class="form-group">
-          <label for="visit_time" class="form-label">Preferred Time Slot</label>
-          <select id="visit_time" name="visit_time" class="form-select mono" required>
-            <option value="10:00 AM">10:00 AM (Morning)</option>
-            <option value="11:30 AM">11:30 AM (Late Morning)</option>
-            <option value="02:30 PM">02:30 PM (Afternoon)</option>
-            <option value="04:30 PM" selected>04:30 PM (Evening)</option>
-            <option value="06:00 PM">06:00 PM (Post College)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="booking_message" class="form-label">Message for Property Host / Owner (Optional)</label>
-        <textarea 
-          id="booking_message" 
-          name="message" 
-          class="form-textarea" 
-          rows="3" 
-          placeholder="e.g. Coming with my roommate to inspect Wi-Fi and food options."
-        ></textarea>
-      </div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn btn-ghost" onclick="closeBookingModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary" id="btnConfirmBooking">Confirm Visit Slot &rarr;</button>
-      </div>
-    </form>
-    {% else %}
-    <div class="modal-login-prompt">
-      <p>You need to be signed in as a student to schedule an in-person room visit.</p>
-      <div class="prompt-actions">
-        <a href="{{ url_for('login') }}" class="btn btn-primary">Sign In to Book Visit</a>
-        <a href="{{ url_for('register') }}" class="btn btn-ghost">Create Student Account</a>
-      </div>
-    </div>
-    {% endif %}
-  </div>
-</div>
 {% endblock %}

@@ -142,7 +142,7 @@ function openGalleryModal(title, area, images) {
     try { imgList = JSON.parse(images); } catch(e) { imgList = [images]; }
   }
   if (!imgList || imgList.length === 0) {
-    imgList = ["https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80"];
+    imgList = ["/static/images/rooms/sunrise_pg.jpg"];
   }
 
   mainImg.src = imgList[0];

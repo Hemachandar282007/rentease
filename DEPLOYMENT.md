@@ -18,22 +18,31 @@ Render provides free hosting for Python web apps with automatic HTTPS.
    git push -u origin main
    ```
 
-2. **Create a new Web Service on [Render](https://render.com/)**:
-   - Click **New +** > **Web Service**.
-   - Connect your GitHub repository.
-   - Set the following settings:
-     - **Name**: `rentease`
-     - **Region**: Closest to your target users (e.g. Singapore / Frankfurt)
-     - **Branch**: `main`
-     - **Root Directory**: `rentease` (if deploying from repository root, set to `rentease`)
-     - **Runtime**: `Python 3`
-     - **Build Command**: `pip install -r requirements.txt`
-     - **Start Command**: `gunicorn wsgi:app`
-   - Under **Environment Variables**, add:
-     - `FLASK_SECRET_KEY`: Enter any random 32-character string (e.g. `rentease-prod-key-98234710294812`)
-     - `FLASK_DEBUG`: `False`
-   - Click **Create Web Service**.
-   - Within 2 minutes, your web application will be live at `https://rentease-xxxx.onrender.com`!
+2. **Create a Web Service or Blueprint on [Render](https://render.com/)**:
+   - **Method A (Blueprint - Instant 1-Click)**:
+     - In Render dashboard, click **New +** > **Blueprint**.
+     - Connect your `rentease` repository.
+     - Render will automatically read `render.yaml` and configure the build, port binding, and start commands!
+     - Click **Apply**.
+   
+   - **Method B (Standard Web Service)**:
+     - Click **New +** > **Web Service**.
+     - Connect your `rentease` GitHub repository (`https://github.com/Hemachandar282007/rentease.git`).
+     - Set the following settings:
+       - **Name**: `rentease`
+       - **Region**: Singapore / Frankfurt / Oregon
+       - **Branch**: `main`
+       - **Root Directory**: Leave blank (default)
+       - **Runtime**: `Python 3`
+       - **Build Command**: `pip install -r requirements.txt`
+       - **Start Command**: `gunicorn wsgi:app --bind 0.0.0.0:$PORT`
+     - Under **Environment Variables**, add:
+       - `FLASK_SECRET_KEY`: Enter any random 32-character string (or click Generate)
+       - `FLASK_DEBUG`: `False`
+       - `PYTHON_VERSION`: `3.12.10`
+     - Click **Create Web Service**.
+
+3. Within 2-3 minutes, your web application will be live at `https://rentease-xxxx.onrender.com`!
 
 ---
 

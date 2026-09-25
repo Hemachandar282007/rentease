@@ -197,11 +197,9 @@ def seed_data(cursor, conn):
             4.8,
             24,
             "Spacious premium double-sharing rooms just 4 minutes walking distance from Gate 2. Hygienic South Indian home-style meals, 24/7 CCTV surveillance, and dedicated study desks.",
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80",
+            "/static/images/rooms/sunrise_pg.jpg",
             json.dumps([
-                "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/sunrise_pg.jpg"
             ]),
             "+919842100100",
             admin_id
@@ -220,10 +218,9 @@ def seed_data(cursor, conn):
             4.6,
             18,
             "Peaceful, green atmosphere ideal for exam preparation. Homely mess food with vegetarian options, solar hot water geyser, and spacious balconies.",
-            "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80",
+            "/static/images/rooms/maple_residency.jpg",
             json.dumps([
-                "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/maple_residency.jpg"
             ]),
             "+919842100100",
             admin_id
@@ -242,10 +239,9 @@ def seed_data(cursor, conn):
             4.9,
             31,
             "Exclusive, secure gated residence for female students. Strict security, biometric gate entry, air-conditioned single private rooms, and healthy diet meal plans.",
-            "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80",
+            "/static/images/rooms/nest_girls_pg.jpg",
             json.dumps([
-                "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/nest_girls_pg.jpg"
             ]),
             "+919842100100",
             admin_id
@@ -264,10 +260,9 @@ def seed_data(cursor, conn):
             4.4,
             15,
             "Affordable sharing accommodation with access to an open shared induction kitchen, automatic washing machine, and spacious parking.",
-            "https://images.unsplash.com/photo-1595524362625-fc5b0d0c3fa4?auto=format&fit=crop&w=800&q=80",
+            "/static/images/rooms/anna_residency.jpg",
             json.dumps([
-                "https://images.unsplash.com/photo-1595524362625-fc5b0d0c3fa4?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/anna_residency.jpg"
             ]),
             "+919842100100",
             admin_id
@@ -286,10 +281,9 @@ def seed_data(cursor, conn):
             4.9,
             42,
             "Luxury private student apartments featuring dedicated workstations, high-speed fiber internet, ergonomic study chairs, and access to an indoor gym.",
-            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80",
+            "/static/images/rooms/greenfield_suites.jpg",
             json.dumps([
-                "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/greenfield_suites.jpg"
             ]),
             "+919842100100",
             admin_id
@@ -308,10 +302,9 @@ def seed_data(cursor, conn):
             4.2,
             9,
             "Budget-friendly stay with clean dormitory-style triple sharing rooms, large common recreation hall with TV, and purified RO water.",
-            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
+            "/static/images/rooms/emerald_living.jpg",
             json.dumps([
-                "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/emerald_living.jpg"
             ]),
             "+919842100100",
             admin_id
@@ -407,29 +400,22 @@ def seed_images_and_payments(cursor, conn):
     """Updates existing records with image URLs and sample payments if not present."""
     galleries = {
         1: [
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80"
+            "/static/images/rooms/sunrise_pg.jpg"
         ],
         2: [
-            "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80"
+            "/static/images/rooms/maple_residency.jpg"
         ],
         3: [
-            "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
+            "/static/images/rooms/nest_girls_pg.jpg"
         ],
         4: [
-            "https://images.unsplash.com/photo-1595524362625-fc5b0d0c3fa4?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80"
+            "/static/images/rooms/anna_residency.jpg"
         ],
         5: [
-            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80"
+            "/static/images/rooms/greenfield_suites.jpg"
         ],
         6: [
-            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=800&q=80"
+            "/static/images/rooms/emerald_living.jpg"
         ]
     }
 

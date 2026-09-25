@@ -744,20 +744,16 @@ def admin_add_listing():
     if not image_url:
         presets = {
             "modern": [
-                "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/sunrise_pg.jpg"
             ],
             "cozy": [
-                "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/maple_residency.jpg"
             ],
             "single": [
-                "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/nest_girls_pg.jpg"
             ],
             "luxury": [
-                "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80",
-                "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80"
+                "/static/images/rooms/greenfield_suites.jpg"
             ]
         }
         selected = presets.get(preset_style, presets["modern"])

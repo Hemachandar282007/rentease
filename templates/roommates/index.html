@@ -7,16 +7,16 @@
     <div class="page-header-content">
       <div>
         <div class="section-badge">COLLEGIATE MATCHER</div>
-        <h1>Lifestyle-Compatible Roommates</h1>
+        <h1>Compatible Student Roommates</h1>
         <p class="page-header-sub">
-          Stop guessing who you'll live with. Match with campus peers based on actual daily lifestyle habits — sleep hours, study environments, and dietary routines.
+          Match with campus peers based on daily lifestyle habits — sleep hours, study routines, and budget.
         </p>
       </div>
 
       <div class="roommate-header-action">
         {% if current_user and current_user.role == 'student' %}
           <button type="button" class="btn btn-primary" onclick="openProfileModal()">
-            {% if my_profile %}✏️ Edit My Profile{% else %}+ Post My Roommate Profile{% endif %}
+            {% if my_profile %}✏️ Edit Profile{% else %}+ Post Profile{% endif %}
           </button>
         {% else %}
           <a href="{{ url_for('login') }}?next={{ request.url }}" class="btn btn-primary">
@@ -34,10 +34,10 @@
     <div class="matcher-filter-card">
       <div class="matcher-filter-title">
         <span class="filter-icon">⚡</span>
-        <h3>Interactive Lifestyle Preference Matcher</h3>
+        <h3>Lifestyle Roommate Matcher</h3>
       </div>
       <p class="filter-desc">
-        Select your lifestyle preferences below. RentEase calculates real-time compatibility scores with registered peers.
+        Select your daily lifestyle preferences to calculate instant compatibility scores.
       </p>
 
       <div class="matcher-controls-grid">

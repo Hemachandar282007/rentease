@@ -11,20 +11,6 @@
 </head>
 <body>
 
-  <!-- Top Announcement Strip -->
-  <div class="top-announcement">
-    <div class="wrap top-announcement-inner">
-      <span>CAMPUS REGISTRY &bull; VERIFIED STUDENT RESIDENCES &bull; 2026 ACADEMIC YEAR</span>
-      <div class="announcement-right">
-        {% if current_user %}
-          <span>Signed in as <strong class="mono">{{ current_user.name }}</strong> ({{ current_user.role | capitalize }})</span>
-        {% else %}
-          <span>Official Accommodation Directory & Matcher</span>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-
   <!-- Main Site Header -->
   <header class="site-header">
     <div class="wrap header-row">
@@ -32,15 +18,15 @@
         <span class="brand-mark">RE</span>
         <div class="brand-text">
           <span class="brand-name">RentEase</span>
-          <span class="brand-sub">KSRCT Accommodation Registry</span>
+          <span class="brand-sub">Student Accommodations</span>
         </div>
       </a>
 
       <!-- Desktop Nav -->
       <nav class="main-nav">
         <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
-        <a href="{{ url_for('listings') }}" class="{% if request.endpoint == 'listings' %}active{% endif %}">Open Rooms</a>
-        <a href="{{ url_for('roommates') }}" class="{% if request.endpoint == 'roommates' %}active{% endif %}">Roommate Match</a>
+        <a href="{{ url_for('listings') }}" class="{% if request.endpoint == 'listings' %}active{% endif %}">Rooms</a>
+        <a href="{{ url_for('roommates') }}" class="{% if request.endpoint == 'roommates' %}active{% endif %}">Roommates</a>
 
         {% if current_user %}
           {% if current_user.role == 'admin' %}
@@ -61,8 +47,8 @@
           </div>
         {% else %}
           <div class="auth-actions">
-            <a href="{{ url_for('login') }}" class="btn-login">Sign In</a>
-            <a href="{{ url_for('register') }}" class="btn btn-primary nav-cta">Join / Register</a>
+            <a href="{{ url_for('login') }}" class="btn btn-ghost btn-sm">Sign In</a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm nav-cta">Join Free &rarr;</a>
           </div>
         {% endif %}
       </nav>
@@ -78,8 +64,8 @@
     <!-- Mobile Nav Drawer -->
     <div class="mobile-nav" id="mobileNav">
       <a href="{{ url_for('home') }}">Home</a>
-      <a href="{{ url_for('listings') }}">Open Rooms</a>
-      <a href="{{ url_for('roommates') }}">Roommate Match</a>
+      <a href="{{ url_for('listings') }}">Rooms</a>
+      <a href="{{ url_for('roommates') }}">Roommates</a>
       {% if current_user %}
         {% if current_user.role == 'admin' %}
           <a href="{{ url_for('admin_dashboard') }}">Admin Portal</a>
@@ -129,51 +115,43 @@
             <span class="brand-name">RentEase</span>
           </div>
           <p class="footer-note">
-            The collegiate rental registry and lifestyle-based roommate matching system.
-            Engineered for students, verified by residents, powered by full-stack Flask.
+            Verified student accommodations and lifestyle-based roommate matching near KSRCT campus.
           </p>
-          <div class="stamp-verified">OFFICIALLY REGISTERED &bull; 2026</div>
         </div>
 
         <div class="footer-col">
-          <h4>Directory</h4>
+          <h4>Explore</h4>
           <ul>
-            <li><a href="{{ url_for('listings') }}">Browse All Rooms</a></li>
-            <li><a href="{{ url_for('listings') }}?gender_pref=Boys">Boys Accommodations</a></li>
-            <li><a href="{{ url_for('listings') }}?gender_pref=Girls">Girls PGs & Hostels</a></li>
-            <li><a href="{{ url_for('roommates') }}">Find a Compatible Roommate</a></li>
+            <li><a href="{{ url_for('listings') }}">All Rooms &amp; PGs</a></li>
+            <li><a href="{{ url_for('listings') }}?gender_pref=Boys">Boys Rooms</a></li>
+            <li><a href="{{ url_for('listings') }}?gender_pref=Girls">Girls Rooms</a></li>
+            <li><a href="{{ url_for('roommates') }}">Find Roommates</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
-          <h4>Portal Access</h4>
+          <h4>Account</h4>
           <ul>
             {% if current_user %}
-              {% if current_user.role == 'admin' %}
-                <li><a href="{{ url_for('admin_dashboard') }}">Admin Control Panel</a></li>
-              {% else %}
-                <li><a href="{{ url_for('student_dashboard') }}">Student Dashboard</a></li>
-              {% endif %}
+              <li><a href="{{ url_for('student_dashboard' if current_user.role != 'admin' else 'admin_dashboard') }}">My Dashboard</a></li>
               <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
             {% else %}
-              <li><a href="{{ url_for('login') }}">Student Sign In</a></li>
-              <li><a href="{{ url_for('login') }}?mode=admin">Property Owner / Admin Login</a></li>
-              <li><a href="{{ url_for('register') }}">Create Student Profile</a></li>
+              <li><a href="{{ url_for('login') }}">Sign In</a></li>
+              <li><a href="{{ url_for('register') }}">Create Account</a></li>
             {% endif %}
           </ul>
         </div>
 
         <div class="footer-col">
           <h4>Campus Support</h4>
-          <p class="support-text">KSRCT Campus Gate 2 Info Hub</p>
+          <p class="support-text">KSRCT Campus Gate 2</p>
           <p class="support-text mono">desk@rentease.ksrct.ac.in</p>
           <p class="support-text mono">+91 98421 00100</p>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <span>&copy; 2026 RentEase Accommodation Network. All rights reserved.</span>
-        <span class="mono">Deploy Ready &bull; WSGI Production Compatible</span>
+        <span>&copy; 2026 RentEase. Clean, verified student accommodations.</span>
       </div>
     </div>
   </footer>
@@ -181,6 +159,65 @@
   <!-- Toast Notification Container for Async Operations -->
   <div id="toastNotification" class="toast hidden">
     <span id="toastMessage"></span>
+  </div>
+
+  <!-- Shared Booking Modal -->
+  <div id="bookingModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="auth-badge">FREE ROOM VISIT</div>
+        <h3 id="modalListingTitle">Schedule a Free Visit</h3>
+        <p id="modalListingArea" class="modal-sub"></p>
+        <button type="button" class="modal-close" onclick="closeBookingModal()">&times;</button>
+      </div>
+
+      {% if current_user %}
+      <form id="bookingForm" onsubmit="submitVisitBooking(event)">
+        <input type="hidden" id="bookingListingId" name="listing_id">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="visit_date" class="form-label">Preferred Visit Date</label>
+            <input type="date" id="visit_date" name="visit_date" class="form-input mono" required>
+          </div>
+          <div class="form-group">
+            <label for="visit_time" class="form-label">Preferred Time Slot</label>
+            <select id="visit_time" name="visit_time" class="form-select mono" required>
+              <option value="10:00 AM">10:00 AM (Morning)</option>
+              <option value="11:30 AM">11:30 AM (Late Morning)</option>
+              <option value="02:30 PM">02:30 PM (Afternoon)</option>
+              <option value="04:30 PM" selected>04:30 PM (Evening)</option>
+              <option value="06:00 PM">06:00 PM (Post College)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="booking_message" class="form-label">Message for Property Host (Optional)</label>
+          <textarea 
+            id="booking_message" 
+            name="message" 
+            class="form-textarea" 
+            rows="3" 
+            placeholder="e.g. Coming with my friend to check the room and amenities."
+          ></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeBookingModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnConfirmBooking">Confirm Free Visit &rarr;</button>
+        </div>
+      </form>
+      {% else %}
+      <div class="modal-login-prompt">
+        <p>Please sign in to schedule an in-person room inspection.</p>
+        <div class="prompt-actions">
+          <a href="{{ url_for('login') }}?next={{ request.url }}" class="btn btn-primary">Sign In to Schedule</a>
+          <a href="{{ url_for('register') }}" class="btn btn-ghost">Create Student Account</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
   </div>
 
   <!-- Shared Photo Gallery Lightbox Modal -->
