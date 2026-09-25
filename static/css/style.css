@@ -15,9 +15,9 @@
   --tag-tan: #C79B52;
   --tag-tan-bg: #FBF4E6;
   --accent-blue: #2B547E;
-  --font-display: "Source Serif 4", serif;
-  --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "IBM Plex Mono", "SF Mono", monospace;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
   --shadow-sm: 2px 2px 0px var(--ink);
   --shadow-md: 4px 4px 0px var(--ink);
   --shadow-lg: 6px 6px 0px var(--ink);
@@ -133,9 +133,10 @@ h1, h2, h3, h4 {
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 24px;
   font-size: 14.5px;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .main-nav a {
@@ -207,13 +208,34 @@ h1, h2, h3, h4 {
 .auth-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-.btn-login {
+.auth-actions .btn {
+  white-space: nowrap;
+}
+
+.auth-actions .btn-ghost {
   color: var(--ink) !important;
+  border: 1.5px solid var(--paper-line-strong);
+  background: transparent;
+  padding: 7px 16px;
+  font-size: 14px;
   font-weight: 500;
-  border-bottom: 1px solid var(--ink) !important;
+  border-radius: 8px;
+}
+
+.auth-actions .btn-ghost:hover {
+  background: var(--paper-card);
+  border-color: var(--ink);
+  color: var(--ink) !important;
+}
+
+.auth-actions .btn-primary {
+  padding: 7px 16px;
+  font-size: 14px;
+  border-radius: 8px;
 }
 
 .mobile-toggle {
@@ -635,10 +657,11 @@ h1, h2, h3, h4 {
   background: var(--paper-card);
   border: 2px solid var(--ink);
   box-shadow: var(--shadow-md);
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
 }
 .hero-visual-card:hover {
   transform: translate(-2px, -2px);
@@ -651,6 +674,7 @@ h1, h2, h3, h4 {
   height: 250px;
   overflow: hidden;
   background: #2B332F;
+  border-radius: 0;
 }
 
 .hero-room-img {
