@@ -47,7 +47,125 @@ document.addEventListener("DOMContentLoaded", () => {
     visitDateInput.value = `${yyyy}-${mm}-${dd}`;
     visitDateInput.min = `${yyyy}-${mm}-${dd}`;
   }
+
+  // ─────────────────────────────────────────────────────────────
+  // APPLE-STYLE SCROLL ANIMATIONS — IntersectionObserver Engine
+  // ─────────────────────────────────────────────────────────────
+  initScrollAnimations();
 });
+
+/**
+ * Apple-style scroll reveal system.
+ * Auto-assigns animation classes to all major UI elements,
+ * then triggers them via IntersectionObserver as they enter the viewport.
+ */
+function initScrollAnimations() {
+
+  // Skip if user prefers reduced motion
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // ── 1. Auto-assign reveal classes to elements ──────────────────
+
+  // Section badges & eyebrow labels → fade in
+  document.querySelectorAll(".section-badge, .hero-pill, .auth-badge").forEach(el => {
+    el.classList.add("reveal-fade");
+  });
+
+  // Main section headings → slide up
+  document.querySelectorAll(
+    ".hero-copy h1, section h2, .section-head h2, .auth-header h2, .dash-title"
+  ).forEach(el => {
+    el.classList.add("reveal");
+  });
+
+  // Hero subtext & description paragraphs → slide up with small delay
+  document.querySelectorAll(
+    ".hero-sub, .hero-actions-simple, .hero-search-box, .tally"
+  ).forEach(el => {
+    el.classList.add("reveal");
+    el.classList.add("reveal-delay-1");
+  });
+
+  // Hero visual card → scale in from right
+  document.querySelectorAll(".hero-visual-card").forEach(el => {
+    el.classList.add("reveal-scale");
+    el.classList.add("reveal-delay-2");
+  });
+
+  // Steps (How It Works) → staggered slide up
+  document.querySelectorAll(".step").forEach((el, i) => {
+    el.classList.add("reveal");
+    el.classList.add(`reveal-delay-${Math.min(i + 1, 6)}`);
+  });
+
+  // Room cards → staggered scale-in
+  document.querySelectorAll(".room-card, .listing-card").forEach((el, i) => {
+    el.classList.add("reveal-scale");
+    el.classList.add(`reveal-delay-${Math.min((i % 3) + 1, 6)}`);
+  });
+
+  // Roommate teaser section → split left/right
+  const teaserContent = document.querySelector(".teaser-content");
+  const teaserGraphic = document.querySelector(".teaser-graphic");
+  if (teaserContent) teaserContent.classList.add("reveal-left");
+  if (teaserGraphic) teaserGraphic.classList.add("reveal-right");
+
+  // Teaser actions button → fade
+  document.querySelectorAll(".teaser-actions, .section-head a.text-link").forEach(el => {
+    el.classList.add("reveal-fade");
+  });
+
+  // Footer → gentle fade
+  document.querySelectorAll(
+    ".footer-brand-col, .footer-col, .footer-bottom"
+  ).forEach((el, i) => {
+    el.classList.add("reveal");
+    el.classList.add(`reveal-delay-${Math.min(i + 1, 6)}`);
+  });
+
+  // Dashboard / admin cards → staggered
+  document.querySelectorAll(
+    ".metric-card, .dash-card, .admin-metric-card, .booking-row, .payment-row, .roommate-card"
+  ).forEach((el, i) => {
+    el.classList.add("reveal");
+    el.classList.add(`reveal-delay-${Math.min((i % 4) + 1, 6)}`);
+  });
+
+  // Auth / form panels → slide up
+  document.querySelectorAll(
+    ".auth-card, .form-card, .filter-card"
+  ).forEach(el => {
+    el.classList.add("reveal");
+  });
+
+  // Section dividers / "How it works" label → fade
+  document.querySelectorAll(".how .section-badge, .listings-preview .section-badge").forEach(el => {
+    el.classList.add("reveal-fade");
+  });
+
+  // ── 2. IntersectionObserver — fires when element enters viewport ──
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          // Un-observe after animation so it only plays once
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.12,        // trigger when 12% of element is visible
+      rootMargin: "0px 0px -40px 0px"  // slightly before bottom edge
+    }
+  );
+
+  // Observe all animated elements
+  document.querySelectorAll(
+    ".reveal, .reveal-fade, .reveal-scale, .reveal-left, .reveal-right"
+  ).forEach(el => observer.observe(el));
+}
 
 // -----------------------------------------------------------------------------
 // Booking Modal Controller
